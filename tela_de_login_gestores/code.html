@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Civic Intelligence | Administrator Login</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;600;700;800;900&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "secondary-fixed-dim": "#71dba6",
+              "surface": "#f8f9fb",
+              "secondary-container": "#8af5be",
+              "on-primary-fixed-variant": "#00458f",
+              "inverse-on-surface": "#eff1f3",
+              "primary": "#00346f",
+              "secondary-fixed": "#8df7c1",
+              "primary-fixed-dim": "#abc7ff",
+              "on-surface-variant": "#424751",
+              "surface-dim": "#d8dadc",
+              "on-primary-fixed": "#001b3f",
+              "surface-container-lowest": "#ffffff",
+              "on-error-container": "#93000a",
+              "secondary": "#006c47",
+              "surface-container": "#eceef0",
+              "surface-container-high": "#e6e8ea",
+              "surface-tint": "#255dad",
+              "on-primary": "#ffffff",
+              "inverse-surface": "#2d3133",
+              "outline-variant": "#c2c6d3",
+              "surface-container-highest": "#e0e3e5",
+              "error": "#ba1a1a",
+              "error-container": "#ffdad6",
+              "tertiary-fixed-dim": "#bac8d7",
+              "tertiary": "#293743",
+              "on-secondary-fixed": "#002113",
+              "on-surface": "#191c1e",
+              "tertiary-fixed": "#d5e4f4",
+              "surface-container-low": "#f2f4f6",
+              "on-secondary": "#ffffff",
+              "primary-container": "#004a99",
+              "on-secondary-container": "#00714b",
+              "outline": "#737783",
+              "primary-fixed": "#d7e2ff",
+              "on-secondary-fixed-variant": "#005235",
+              "on-tertiary-fixed-variant": "#3a4855",
+              "inverse-primary": "#abc7ff",
+              "on-background": "#191c1e",
+              "tertiary-container": "#404e5a",
+              "on-tertiary-container": "#b0bfce",
+              "on-tertiary": "#ffffff",
+              "on-tertiary-fixed": "#0f1d28",
+              "on-primary-container": "#9bbdff",
+              "surface-bright": "#f8f9fb",
+              "surface-variant": "#e0e3e5",
+              "on-error": "#ffffff",
+              "background": "#f8f9fb"
+            },
+            fontFamily: {
+              "headline": ["Public Sans"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+          },
+        },
+      }
+    </script>
+<style>.material-symbols-outlined {
+    font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24
+    }
+.glass-panel {
+    background: rgba(248, 249, 251, 0.7);
+    backdrop-filter: blur(20px)
+    }
+.architectural-bg {
+    background-image: linear-gradient(to bottom right, rgba(248, 249, 251, 0.9), rgba(248, 249, 251, 0.4)), url(https://lh3.googleusercontent.com/aida-public/AB6AXuDQ4E_iIdnpmriM1LfES279mq7oS5kcgVSkqs1TkBKnCluo67V2IIgAhfqv6zya4U76wf-cUgFPZ7iTWh6oEhC7QigsD-w5QBWt7SN5C8ycZwBj-KNp1y4A9i_s_FRa7T2FM_7JcvTd88qbM9cza4b9pV8I_lsbStE2QCYJn2aY3_6hYzeTGVG3-Wp8JmGHPEUgQzP4LdEtEda29RxFT-X9o79ZZIz47-nOsiiXLip3B3SeKcHo9Xx0YiaTiLOBWc-zVu4dm2E0nnQ);
+    background-size: cover;
+    background-position: center
+    }</style>
+</head>
+<body class="bg-surface font-body text-on-surface antialiased">
+<!-- Auth Container -->
+<main class="min-h-screen w-full flex items-center justify-center architectural-bg relative px-6" data-alt="Modern architectural city skyline background with soft lighting">
+<!-- Background Overlay Decorative Elements -->
+<div class="absolute inset-0 overflow-hidden pointer-events-none">
+<div class="absolute top-[-10%] right-[-5%] w-[40%] h-[60%] bg-primary/5 rounded-full blur-3xl"></div>
+<div class="absolute bottom-[-10%] left-[-5%] w-[30%] h-[50%] bg-secondary/5 rounded-full blur-3xl"></div>
+</div>
+<!-- Login Card -->
+<div class="w-full max-w-[480px] relative z-10">
+<!-- Asymmetric Accent -->
+<div class="absolute -top-3 -left-3 w-16 h-16 bg-primary-fixed-dim rounded-xl -z-10 opacity-50"></div>
+<div class="bg-surface-container-lowest rounded-xl shadow-[0_12px_40px_rgba(25,28,30,0.06)] overflow-hidden">
+<!-- Header / Logo Area -->
+<div class="pt-12 pb-8 px-10 flex flex-col items-center text-center">
+<div class="w-16 h-16 bg-primary-container/10 rounded-full flex items-center justify-center mb-6">
+<span class="material-symbols-outlined text-primary text-4xl" data-icon="account_balance">account_balance</span>
+</div>
+<h1 class="font-headline font-black text-3xl text-primary tracking-tight mb-2">Civic Intelligence</h1>
+<p class="text-on-surface-variant font-medium text-sm tracking-wide uppercase">Intelligence Portal</p>
+</div>
+<!-- Form Area -->
+<form class="px-10 pb-12 space-y-6">
+<div class="space-y-4">
+<!-- Username Field -->
+<div class="space-y-2">
+<label class="block text-xs font-bold text-on-surface-variant tracking-wider uppercase ml-1" for="username">
+                                Username/Email
+                            </label>
+<div class="relative group">
+<div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-on-surface-variant group-focus-within:text-primary transition-colors text-xl" data-icon="person">person</span>
+</div>
+<input class="w-full bg-surface-container-highest border-none rounded-lg py-3.5 pl-12 pr-4 focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary/20 transition-all text-on-surface placeholder:text-outline outline-none" id="username" name="username" placeholder="Enter your credentials" type="text"/>
+</div>
+</div>
+<!-- Password Field -->
+<div class="space-y-2">
+<div class="flex justify-between items-center px-1">
+<label class="block text-xs font-bold text-on-surface-variant tracking-wider uppercase" for="password">
+                                    Password
+                                </label>
+<a class="text-xs font-semibold text-primary hover:text-primary-container transition-colors" href="#">Forgot Access?</a>
+</div>
+<div class="relative group">
+<div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-on-surface-variant group-focus-within:text-primary transition-colors text-xl" data-icon="lock">lock</span>
+</div>
+<input class="w-full bg-surface-container-highest border-none rounded-lg py-3.5 pl-12 pr-4 focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary/20 transition-all text-on-surface placeholder:text-outline outline-none" id="password" name="password" placeholder="••••••••" type="password"/>
+</div>
+</div>
+</div>
+<!-- Action Button -->
+<div class="pt-2">
+<button class="w-full bg-gradient-to-br from-primary to-primary-container text-on-primary font-headline font-bold py-4 rounded-lg shadow-lg shadow-primary/20 hover:scale-[1.01] active:scale-[0.98] transition-all flex items-center justify-center gap-3" type="submit">
+<span>Acessar Dashboard</span>
+<span class="material-symbols-outlined text-xl" data-icon="login">login</span>
+</button>
+</div>
+<!-- Security Badge -->
+<div class="flex items-center justify-center gap-2 pt-4">
+<span class="material-symbols-outlined text-secondary text-base" data-icon="verified_user" data-weight="fill" style="font-variation-settings: 'FILL' 1;">verified_user</span>
+<span class="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest">Secure Government Environment</span>
+</div>
+</form>
+</div>
+<!-- Footer Links -->
+<div class="mt-8 flex justify-center gap-8 text-xs font-medium text-on-surface-variant/70">
+<a class="hover:text-primary transition-colors" href="#">Privacy Policy</a>
+<a class="hover:text-primary transition-colors" href="#">Technical Support</a>
+<a class="hover:text-primary transition-colors" href="#">Terms of Use</a>
+</div>
+</div>
+<!-- Asymmetric Corner Element -->
+<div class="fixed bottom-0 right-0 p-12 hidden lg:block">
+<div class="flex flex-col items-end opacity-20">
+<p class="font-headline font-black text-6xl text-primary leading-none">CITY</p>
+<p class="font-headline font-black text-6xl text-primary leading-none">ADMIN</p>
+</div>
+</div>
+</main>
+</body></html>

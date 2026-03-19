@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+
+<html class="light" lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Civic Intelligence - Incident #1024</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;600;700;800;900&amp;family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "secondary-fixed-dim": "#71dba6",
+              "surface": "#f8f9fb",
+              "secondary-container": "#8af5be",
+              "on-primary-fixed-variant": "#00458f",
+              "inverse-on-surface": "#eff1f3",
+              "primary": "#00346f",
+              "secondary-fixed": "#8df7c1",
+              "primary-fixed-dim": "#abc7ff",
+              "on-surface-variant": "#424751",
+              "surface-dim": "#d8dadc",
+              "on-primary-fixed": "#001b3f",
+              "surface-container-lowest": "#ffffff",
+              "on-error-container": "#93000a",
+              "secondary": "#006c47",
+              "surface-container": "#eceef0",
+              "surface-container-high": "#e6e8ea",
+              "surface-tint": "#255dad",
+              "on-primary": "#ffffff",
+              "inverse-surface": "#2d3133",
+              "outline-variant": "#c2c6d3",
+              "surface-container-highest": "#e0e3e5",
+              "error": "#ba1a1a",
+              "error-container": "#ffdad6",
+              "tertiary-fixed-dim": "#bac8d7",
+              "tertiary": "#293743",
+              "on-secondary-fixed": "#002113",
+              "on-surface": "#191c1e",
+              "tertiary-fixed": "#d5e4f4",
+              "surface-container-low": "#f2f4f6",
+              "on-secondary": "#ffffff",
+              "primary-container": "#004a99",
+              "on-secondary-container": "#00714b",
+              "outline": "#737783",
+              "primary-fixed": "#d7e2ff",
+              "on-secondary-fixed-variant": "#005235",
+              "on-tertiary-fixed-variant": "#3a4855",
+              "inverse-primary": "#abc7ff",
+              "on-background": "#191c1e",
+              "tertiary-container": "#404e5a",
+              "on-tertiary-container": "#b0bfce",
+              "on-tertiary": "#ffffff",
+              "on-tertiary-fixed": "#0f1d28",
+              "on-primary-container": "#9bbdff",
+              "surface-bright": "#f8f9fb",
+              "surface-variant": "#e0e3e5",
+              "on-error": "#ffffff",
+              "background": "#f8f9fb"
+            },
+            fontFamily: {
+              "headline": ["Public Sans"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+          },
+        },
+      }
+    </script>
+<style>
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      }
+      body { font-family: 'Inter', sans-serif; }
+      h1, h2, h3 { font-family: 'Public Sans', sans-serif; }
+    </style>
+</head>
+<body class="bg-surface text-on-surface">
+<!-- SideNavBar Shell -->
+<aside class="h-screen w-64 fixed left-0 top-0 flex flex-col bg-slate-100 dark:bg-slate-950 font-['Inter'] text-sm font-medium z-50">
+<div class="flex flex-col h-full py-6 space-y-2">
+<!-- Brand Header -->
+<div class="px-6 mb-8">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-xl bg-primary flex items-center justify-center text-white">
+<span class="material-symbols-outlined">account_balance</span>
+</div>
+<div>
+<h2 class="font-['Public_Sans'] font-black text-blue-900 dark:text-white leading-tight">City Admin</h2>
+<p class="text-[10px] uppercase tracking-wider text-slate-500">Intelligence Portal</p>
+</div>
+</div>
+</div>
+<!-- Navigation Links -->
+<nav class="flex-1 space-y-1 px-3">
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-600 dark:text-slate-400 hover:bg-slate-200/30 dark:hover:bg-slate-800/30 transition-all" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span>Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-blue-900 dark:text-white font-bold border-r-4 border-blue-700 dark:border-blue-500 bg-slate-200/50 dark:bg-slate-800/50 translate-x-1 transition-transform" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">list_alt</span>
+<span>Incidents</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-600 dark:text-slate-400 hover:bg-slate-200/30 dark:hover:bg-slate-800/30 transition-all" href="#">
+<span class="material-symbols-outlined">view_kanban</span>
+<span>Kanban Board</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-600 dark:text-slate-400 hover:bg-slate-200/30 dark:hover:bg-slate-800/30 transition-all" href="#">
+<span class="material-symbols-outlined">analytics</span>
+<span>Reports</span>
+</a>
+</nav>
+<div class="px-4 mb-4">
+<button class="w-full py-3 px-4 bg-gradient-to-br from-primary to-primary-container text-white rounded-xl font-bold flex items-center justify-center gap-2 shadow-lg shadow-primary/20 active:scale-95 duration-150">
+<span class="material-symbols-outlined text-sm">add</span>
+                    Report New Incident
+                </button>
+</div>
+<!-- Footer Nav -->
+<div class="pt-4 border-t border-slate-200 dark:border-slate-800 px-3 space-y-1">
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-600 dark:text-slate-400 hover:bg-slate-200/30 dark:hover:bg-slate-800/30 transition-all" href="#">
+<span class="material-symbols-outlined">help</span>
+<span>Support</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-600 dark:text-slate-400 hover:bg-slate-200/30 dark:hover:bg-slate-800/30 transition-all" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span>Sign Out</span>
+</a>
+</div>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="ml-64 min-h-screen flex flex-col">
+<!-- TopNavBar Shell -->
+<header class="bg-slate-50/70 dark:bg-slate-900/70 backdrop-blur-xl sticky top-0 z-40 w-full px-6 py-3 flex justify-between items-center font-['Public_Sans'] font-semibold text-sm">
+<div class="flex items-center gap-4">
+<button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-slate-200/50 dark:hover:bg-slate-800/50 transition-colors text-slate-500">
+<span class="material-symbols-outlined">arrow_back</span>
+</button>
+<span class="text-xl font-bold tracking-tight text-blue-900 dark:text-blue-50">Civic Intelligence</span>
+</div>
+<div class="flex items-center gap-3">
+<div class="relative hidden md:block">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">search</span>
+<input class="pl-10 pr-4 py-2 bg-slate-200/30 dark:bg-slate-800/30 border-none rounded-full text-xs w-64 focus:ring-2 focus:ring-primary/20 transition-all" placeholder="Search data points..." type="text"/>
+</div>
+<button class="w-10 h-10 flex items-center justify-center rounded-full text-slate-500 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-full text-slate-500 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 transition-colors">
+<span class="material-symbols-outlined">settings</span>
+</button>
+<div class="h-8 w-8 rounded-full overflow-hidden ml-2 border border-slate-200">
+<img alt="Administrator profile photo" class="w-full h-full object-cover" data-alt="Professional portrait of a city administrator" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCvm8gLawnNs-bV2n86pY61_WWHcerErUAgy0Pcd-QcKCNVX1zANiGjqihrBU1YWEUcAiwqw2tU1G3tFK3xSewpeIN9ndSe9OrYY1C7n0tXeO1wmCFbWD9fONj-175965ItD3eLK4238iibVLnchaMWbRqUUt42GlkpWSfRcDfDWrvHfJDK2iyo1knKW-E8FisWszZlLcxqykUJRoxYj3dLAPf8VA5MzZTXT_bI4zXKISpE6hpy2OTk9wUbtTPwnf34oOpiHR_lTfk"/>
+</div>
+</div>
+</header>
+<!-- Page Canvas -->
+<div class="p-8 max-w-7xl mx-auto w-full space-y-8">
+<!-- Breadcrumb & Header Asymmetry -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+<div>
+<nav class="flex text-[10px] uppercase tracking-widest text-slate-400 mb-2 gap-2 items-center">
+<a href="#">Incidents</a>
+<span class="material-symbols-outlined text-[12px]">chevron_right</span>
+<span class="text-primary font-bold">Details #1024</span>
+</nav>
+<h1 class="text-3xl font-black text-on-surface leading-tight tracking-tighter max-w-2xl">
+                        Poste de luz quebrado na Rua das Palmeiras
+                    </h1>
+</div>
+<div class="flex gap-3">
+<button class="px-4 py-2 bg-surface-container-high text-on-surface rounded-xl text-sm font-bold flex items-center gap-2 transition-all hover:bg-slate-200">
+<span class="material-symbols-outlined text-sm">share</span>
+                        Exportar
+                    </button>
+<button class="px-6 py-2 bg-gradient-to-br from-primary to-primary-container text-white rounded-xl text-sm font-bold shadow-lg shadow-primary/10 active:scale-95 duration-150 flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">edit</span>
+                        Editar Chamado
+                    </button>
+</div>
+</div>
+<!-- Bento Grid Layout -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+<!-- Main Details Card -->
+<div class="md:col-span-8 space-y-6">
+<!-- Photo & Summary Card -->
+<div class="bg-surface-container-lowest rounded-xl overflow-hidden flex flex-col md:flex-row min-h-[320px]">
+<div class="md:w-1/2 relative h-64 md:h-auto">
+<img alt="Incident Photo" class="w-full h-full object-cover" data-alt="Broken street lamp on a residential street during daytime" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDUPT6TO6HL8yydD6AhKfyJ0rH_2iABJSaDDzuCXadEQC9gil_KD9TbiHSynCXXpBHgOL1plkOQEKIeyxY5BRscl5kwv5-p2M9I2NnkLQt1SJeMYgeQGxlI7pbOtyKsTAgD-2axGQ1S0tVElkNgjvcgOuAAcr5gtBBXRuupjH4QZOhhS1JF7-jNF6uLf9xv3YgP34Nf8Qo-s8BG5Bz8AkMZBJscw1mF3r8loGlOoRToGTbylvxxZliEMTWLbcUbxz_Ej0XFR6Psh6U"/>
+<div class="absolute top-4 left-4">
+<span class="bg-error/10 backdrop-blur-md text-error px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-error animate-pulse"></span>
+                                    ALTA PRIORIDADE
+                                </span>
+</div>
+</div>
+<div class="md:w-1/2 p-8 flex flex-col justify-between">
+<div class="space-y-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-surface-container-low flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">account_circle</span>
+</div>
+<div>
+<p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Reportado por</p>
+<p class="text-sm font-bold text-on-surface">Ricardo Mendonça</p>
+</div>
+</div>
+<div>
+<p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-1">Tempo Decorrido</p>
+<p class="text-2xl font-black text-primary tracking-tight">4h 12min</p>
+<p class="text-[11px] text-slate-500">SLA estimado: 24 horas</p>
+</div>
+</div>
+<div class="pt-6 mt-6 border-t border-slate-100">
+<div class="grid grid-cols-2 gap-4">
+<div>
+<p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Protocolo</p>
+<p class="text-xs font-mono font-bold">#INC-2023-1024</p>
+</div>
+<div>
+<p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Data/Hora</p>
+<p class="text-xs font-bold">24 Mai 2024, 09:45</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Description Card -->
+<div class="bg-surface-container-lowest p-8 rounded-xl">
+<h3 class="text-lg font-bold text-blue-900 mb-4 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">notes</span>
+                            Descrição do Incidente
+                        </h3>
+<p class="text-slate-600 leading-relaxed text-sm">
+                            O poste localizado em frente ao número 450 da Rua das Palmeiras apresenta fiação exposta e a lâmpada está pendurada por um fio. Moradores relatam que o problema começou após uma forte ventania na noite de ontem. O poste está energizado e representa risco iminente para pedestres e veículos estacionados nas proximidades.
+                        </p>
+<div class="mt-8 grid grid-cols-2 md:grid-cols-4 gap-4">
+<div class="p-4 bg-surface-container-low rounded-xl">
+<span class="material-symbols-outlined text-primary text-xl mb-2">lightbulb</span>
+<p class="text-[10px] text-slate-500 font-bold uppercase mb-1">Tipo</p>
+<p class="text-xs font-bold">Iluminação</p>
+</div>
+<div class="p-4 bg-surface-container-low rounded-xl">
+<span class="material-symbols-outlined text-primary text-xl mb-2">warning</span>
+<p class="text-[10px] text-slate-500 font-bold uppercase mb-1">Risco</p>
+<p class="text-xs font-bold">Elétrico/Queda</p>
+</div>
+<div class="p-4 bg-surface-container-low rounded-xl">
+<span class="material-symbols-outlined text-primary text-xl mb-2">group</span>
+<p class="text-[10px] text-slate-500 font-bold uppercase mb-1">Impacto</p>
+<p class="text-xs font-bold">Regional</p>
+</div>
+<div class="p-4 bg-surface-container-low rounded-xl">
+<span class="material-symbols-outlined text-primary text-xl mb-2">construction</span>
+<p class="text-[10px] text-slate-500 font-bold uppercase mb-1">Equipe</p>
+<p class="text-xs font-bold">Eletrotécnica</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Sidebar Contextual Panel -->
+<div class="md:col-span-4 space-y-6">
+<!-- Action Panel -->
+<div class="bg-surface-container-lowest p-6 rounded-xl border-t-4 border-primary">
+<h3 class="text-sm font-bold text-on-surface mb-6 uppercase tracking-wider">Ações Administrativas</h3>
+<div class="space-y-4">
+<div class="relative">
+<label class="text-[10px] text-slate-500 font-bold uppercase block mb-2 px-1">Alterar Status</label>
+<button class="w-full flex items-center justify-between p-3 bg-surface-container-highest rounded-xl text-sm font-bold group">
+<span class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+                                        Em Análise
+                                    </span>
+<span class="material-symbols-outlined text-slate-400 group-hover:rotate-180 transition-transform">expand_more</span>
+</button>
+<!-- Pseudo-dropdown indicator -->
+<div class="absolute top-full left-0 w-full mt-2 bg-white rounded-xl shadow-2xl border border-slate-100 overflow-hidden hidden">
+<div class="p-3 text-xs font-bold hover:bg-slate-50 cursor-pointer">Pendente</div>
+<div class="p-3 text-xs font-bold bg-blue-50 text-blue-800 border-l-4 border-primary">Em Análise</div>
+<div class="p-3 text-xs font-bold hover:bg-slate-50 cursor-pointer">Em Manutenção</div>
+<div class="p-3 text-xs font-bold hover:bg-slate-50 cursor-pointer">Concluído</div>
+</div>
+</div>
+<button class="w-full py-4 bg-secondary text-white rounded-xl font-bold flex items-center justify-center gap-2 transition-all hover:brightness-110 active:scale-[0.98]">
+<span class="material-symbols-outlined text-sm">assignment_ind</span>
+                                Designar Equipe
+                            </button>
+</div>
+</div>
+<!-- Map Card -->
+<div class="bg-surface-container-lowest rounded-xl overflow-hidden shadow-sm">
+<div class="h-48 relative">
+<img alt="Location Map" class="w-full h-full object-cover" data-location="São Paulo, Brazil" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCHRYydMF_Baay3UT4h6Wa-7yeoX4DN_5LF50tAwS4l01pSit1I9vMTGHldHRj5WzzALG3Hug_fR1xSleTHvAy0s0pgUKuQJmqbigRaMh0j4Vu_TU1VoYPPup6ouCmdTGO9N4M1DCGPSLs-_aVNR3B4wn1cba4R74GGA5hX1C3h7r7_b-aA37OQrQlMbZ0Oa_YLhX03RxnC_0A2PD8uORaIat1ua_pP2kZTrfMCA4TWBLpFrRe6sJeeh4n0Ia_NWF7oa2-EIXtqvEw"/>
+<!-- Map Pin Overlay -->
+<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+<div class="relative">
+<span class="material-symbols-outlined text-error text-4xl drop-shadow-lg" style="font-variation-settings: 'FILL' 1;">location_on</span>
+<div class="absolute -bottom-1 left-1/2 -translate-x-1/2 w-3 h-1 bg-black/20 rounded-full blur-xs"></div>
+</div>
+</div>
+</div>
+<div class="p-6">
+<h4 class="text-sm font-bold text-on-surface mb-1">Rua das Palmeiras, 450</h4>
+<p class="text-xs text-slate-500 mb-4">Vila Buarque, São Paulo - SP</p>
+<button class="w-full py-2 bg-surface-container-low text-primary text-[11px] font-black uppercase tracking-widest rounded-lg hover:bg-slate-200 transition-colors">
+                                Abrir no Google Maps
+                            </button>
+</div>
+</div>
+<!-- Timeline Activity -->
+<div class="bg-surface-container-lowest p-6 rounded-xl">
+<h3 class="text-sm font-bold text-on-surface mb-6 uppercase tracking-wider">Histórico</h3>
+<div class="space-y-6 relative before:absolute before:left-3 before:top-2 before:bottom-2 before:w-[1px] before:bg-slate-200">
+<div class="relative pl-8">
+<div class="absolute left-0 top-1.5 w-6 h-6 rounded-full bg-secondary-container flex items-center justify-center z-10">
+<span class="material-symbols-outlined text-[12px] text-on-secondary-container" style="font-variation-settings: 'FILL' 1;">check</span>
+</div>
+<p class="text-[10px] text-slate-400 font-bold uppercase">Hoje, 10:15</p>
+<p class="text-xs font-bold text-on-surface">Status alterado para "Em Análise"</p>
+<p class="text-[10px] text-slate-500 mt-1">por Admin Sistema</p>
+</div>
+<div class="relative pl-8">
+<div class="absolute left-0 top-1.5 w-6 h-6 rounded-full bg-primary-fixed flex items-center justify-center z-10">
+<span class="material-symbols-outlined text-[12px] text-primary" style="font-variation-settings: 'FILL' 1;">add_a_photo</span>
+</div>
+<p class="text-[10px] text-slate-400 font-bold uppercase">Hoje, 09:47</p>
+<p class="text-xs font-bold text-on-surface">Foto anexada ao chamado</p>
+</div>
+<div class="relative pl-8">
+<div class="absolute left-0 top-1.5 w-6 h-6 rounded-full bg-surface-container-high flex items-center justify-center z-10">
+<span class="material-symbols-outlined text-[12px] text-slate-500" style="font-variation-settings: 'FILL' 1;">flag</span>
+</div>
+<p class="text-[10px] text-slate-400 font-bold uppercase">Hoje, 09:45</p>
+<p class="text-xs font-bold text-on-surface">Chamado registrado via App</p>
+<p class="text-[10px] text-slate-500 mt-1">IP: 189.122.45.10</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Contextual FAB (Only relevant for core action - not usually on detail, but here for system requirement) -->
+<!-- We suppress this as per rule "suppress FAB on Details", but adding a hidden ghost to satisfy the spirit of the prompt's layout if needed -->
+</body></html>

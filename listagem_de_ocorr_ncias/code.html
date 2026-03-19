@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+
+<html class="light" lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Civic Intelligence - Listagem de Ocorrências</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;600;700;800;900&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<!-- Icons -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "secondary-fixed-dim": "#71dba6",
+                        "surface": "#f8f9fb",
+                        "secondary-container": "#8af5be",
+                        "on-primary-fixed-variant": "#00458f",
+                        "inverse-on-surface": "#eff1f3",
+                        "primary": "#00346f",
+                        "secondary-fixed": "#8df7c1",
+                        "primary-fixed-dim": "#abc7ff",
+                        "on-surface-variant": "#424751",
+                        "surface-dim": "#d8dadc",
+                        "on-primary-fixed": "#001b3f",
+                        "surface-container-lowest": "#ffffff",
+                        "on-error-container": "#93000a",
+                        "secondary": "#006c47",
+                        "surface-container": "#eceef0",
+                        "surface-container-high": "#e6e8ea",
+                        "surface-tint": "#255dad",
+                        "on-primary": "#ffffff",
+                        "inverse-surface": "#2d3133",
+                        "outline-variant": "#c2c6d3",
+                        "surface-container-highest": "#e0e3e5",
+                        "error": "#ba1a1a",
+                        "error-container": "#ffdad6",
+                        "tertiary-fixed-dim": "#bac8d7",
+                        "tertiary": "#293743",
+                        "on-secondary-fixed": "#002113",
+                        "on-surface": "#191c1e",
+                        "tertiary-fixed": "#d5e4f4",
+                        "surface-container-low": "#f2f4f6",
+                        "on-secondary": "#ffffff",
+                        "primary-container": "#004a99",
+                        "on-secondary-container": "#00714b",
+                        "outline": "#737783",
+                        "primary-fixed": "#d7e2ff",
+                        "on-secondary-fixed-variant": "#005235",
+                        "on-tertiary-fixed-variant": "#3a4855",
+                        "inverse-primary": "#abc7ff",
+                        "on-background": "#191c1e",
+                        "tertiary-container": "#404e5a",
+                        "on-tertiary-container": "#b0bfce",
+                        "on-tertiary": "#ffffff",
+                        "on-tertiary-fixed": "#0f1d28",
+                        "on-primary-container": "#9bbdff",
+                        "surface-bright": "#f8f9fb",
+                        "surface-variant": "#e0e3e5",
+                        "on-error": "#ffffff",
+                        "background": "#f8f9fb"
+                    },
+                    fontFamily: {
+                        "headline": ["Public Sans"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    },
+                    borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .glass-panel {
+            background: rgba(224, 227, 229, 0.7);
+            backdrop-filter: blur(20px);
+        }
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+    </style>
+</head>
+<body class="bg-surface font-body text-on-surface flex min-h-screen">
+<!-- SideNavBar -->
+<aside class="h-screen w-64 fixed left-0 top-0 flex flex-col bg-slate-100 dark:bg-slate-950 z-50">
+<div class="flex flex-col h-full py-6 space-y-2">
+<!-- Brand -->
+<div class="px-6 mb-8 flex items-center space-x-3">
+<div class="w-10 h-10 bg-primary-container rounded-xl flex items-center justify-center">
+<span class="material-symbols-outlined text-on-primary-container" style="font-variation-settings: 'FILL' 1;">church</span>
+</div>
+<div>
+<h1 class="font-['Public_Sans'] font-black text-blue-900 dark:text-white leading-tight">City Admin</h1>
+<p class="text-[10px] uppercase tracking-widest text-slate-500 font-bold">Intelligence Portal</p>
+</div>
+</div>
+<!-- Nav Links -->
+<nav class="flex-1 px-4 space-y-1">
+<a class="flex items-center space-x-3 px-4 py-3 rounded-lg text-slate-600 dark:text-slate-400 hover:text-blue-700 dark:hover:text-blue-300 hover:bg-slate-200/30 dark:hover:bg-slate-800/30 transition-all font-['Inter'] text-sm font-medium group" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span>Dashboard</span>
+</a>
+<a class="flex items-center space-x-3 px-4 py-3 rounded-lg text-blue-900 dark:text-white font-bold border-r-4 border-blue-700 dark:border-blue-500 bg-slate-200/50 dark:bg-slate-800/50 transition-all font-['Inter'] text-sm group" href="#">
+<span class="material-symbols-outlined" data-icon="list_alt">list_alt</span>
+<span>Incidents</span>
+</a>
+<a class="flex items-center space-x-3 px-4 py-3 rounded-lg text-slate-600 dark:text-slate-400 hover:text-blue-700 dark:hover:text-blue-300 hover:bg-slate-200/30 dark:hover:bg-slate-800/30 transition-all font-['Inter'] text-sm font-medium group" href="#">
+<span class="material-symbols-outlined" data-icon="view_kanban">view_kanban</span>
+<span>Kanban Board</span>
+</a>
+<a class="flex items-center space-x-3 px-4 py-3 rounded-lg text-slate-600 dark:text-slate-400 hover:text-blue-700 dark:hover:text-blue-300 hover:bg-slate-200/30 dark:hover:bg-slate-800/30 transition-all font-['Inter'] text-sm font-medium group" href="#">
+<span class="material-symbols-outlined" data-icon="analytics">analytics</span>
+<span>Reports</span>
+</a>
+</nav>
+<!-- CTA -->
+<div class="px-4 py-4">
+<button class="w-full bg-gradient-to-br from-primary to-primary-container text-on-primary py-3 px-4 rounded-xl font-semibold text-sm flex items-center justify-center space-x-2 shadow-lg active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-sm">add_circle</span>
+<span>Report New Incident</span>
+</button>
+</div>
+<!-- Footer Tabs -->
+<div class="pt-4 border-t border-slate-200/20 dark:border-slate-800/20 px-4 space-y-1">
+<a class="flex items-center space-x-3 px-4 py-2 rounded-lg text-slate-500 text-xs font-medium hover:bg-slate-200/30 transition-all" href="#">
+<span class="material-symbols-outlined text-sm" data-icon="help">help</span>
+<span>Support</span>
+</a>
+<a class="flex items-center space-x-3 px-4 py-2 rounded-lg text-slate-500 text-xs font-medium hover:bg-slate-200/30 transition-all" href="#">
+<span class="material-symbols-outlined text-sm" data-icon="logout">logout</span>
+<span>Sign Out</span>
+</a>
+</div>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="flex-1 ml-64 min-h-screen flex flex-col relative overflow-hidden">
+<!-- TopNavBar -->
+<header class="bg-slate-50/70 dark:bg-slate-900/70 backdrop-blur-xl docked full-width top-0 sticky z-40 flex justify-between items-center w-full px-8 py-4">
+<div class="flex items-center space-x-4">
+<h2 class="text-xl font-['Public_Sans'] font-bold tracking-tight text-blue-900 dark:text-blue-50">Civic Intelligence</h2>
+<div class="h-6 w-[1px] bg-slate-300 dark:bg-slate-700"></div>
+<div class="flex items-center text-slate-500 text-sm font-medium">
+<span>Incidents</span>
+<span class="material-symbols-outlined mx-1 text-base">chevron_right</span>
+<span class="text-blue-700 dark:text-blue-400 font-bold">Listagem de Ocorrências</span>
+</div>
+</div>
+<div class="flex items-center space-x-3">
+<div class="flex space-x-1 mr-4">
+<button class="p-2 rounded-full text-slate-500 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 transition-colors active:scale-95 duration-150">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="p-2 rounded-full text-slate-500 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 transition-colors active:scale-95 duration-150">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</button>
+</div>
+<div class="flex items-center space-x-3 border-l pl-4 border-slate-200">
+<div class="text-right">
+<p class="text-xs font-bold text-on-surface">Chief Administrator</p>
+<p class="text-[10px] text-slate-500">Operation Center</p>
+</div>
+<img alt="Administrator profile photo" class="w-10 h-10 rounded-full border-2 border-primary-container object-cover" data-alt="Close up portrait of a city administrator" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAgFOLpdVq1w9wipTkFS3eKh5jnC9mU59XhSVh5EXPTDY54vAyXA5a5mDLvF-x-UzwwhhQp52qp8La-fEQCWtCNLiFmMMkf_YAxunFxqRVD9VyzcYSRXxlo382UvVfy2FnPI0SxdjYtwHoJqmKv69g8qkl8bOXVwXElSvOpd0eEkUGDdiz4B5NY7m2hcFC4RaAMBV1xKhFjLVCR8PhRFudpw_N02Q60tD-L60dcPUJ6VYLkP6v0Of92F9dWQ4CGBGVevcVfeaPCaDs"/>
+</div>
+</div>
+</header>
+<!-- Body Canvas -->
+<div class="p-8 space-y-8 max-w-7xl mx-auto w-full">
+<!-- Page Header Section -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
+<div>
+<h3 class="font-headline text-3xl font-extrabold text-primary mb-2">Monitoramento Urbano</h3>
+<p class="text-on-surface-variant max-w-xl">Gerencie e analise as ocorrências em tempo real. Utilize os filtros avançados para otimizar a resposta das equipes de campo.</p>
+</div>
+<div class="flex items-center space-x-3">
+<button class="bg-surface-container-high text-on-surface px-4 py-2.5 rounded-xl font-bold text-sm flex items-center space-x-2 active:scale-95 transition-all">
+<span class="material-symbols-outlined text-lg">description</span>
+<span>Exportar CSV</span>
+</button>
+<button class="bg-surface-container-high text-on-surface px-4 py-2.5 rounded-xl font-bold text-sm flex items-center space-x-2 active:scale-95 transition-all">
+<span class="material-symbols-outlined text-lg">picture_as_pdf</span>
+<span>Exportar PDF</span>
+</button>
+</div>
+</div>
+<!-- Filters & Search Bento Grid -->
+<section class="grid grid-cols-1 lg:grid-cols-4 gap-4">
+<!-- Search Box -->
+<div class="lg:col-span-2 bg-surface-container-lowest p-6 rounded-xl border border-outline-variant/15 flex flex-col justify-center space-y-3">
+<label class="text-xs font-bold text-slate-500 uppercase tracking-wider">Busca Rápida</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">search</span>
+<input class="w-full pl-12 pr-4 py-3.5 bg-surface-container-highest border-none rounded-xl focus:ring-2 focus:ring-primary focus:bg-surface-container-lowest transition-all text-sm placeholder:text-slate-400" placeholder="Buscar por ID, Categoria ou Descrição..." type="text"/>
+</div>
+</div>
+<!-- Filters -->
+<div class="lg:col-span-2 bg-surface-container-low p-6 rounded-xl border border-outline-variant/15 grid grid-cols-1 md:grid-cols-3 gap-4">
+<div class="flex flex-col space-y-2">
+<label class="text-[10px] font-black text-slate-500 uppercase">Bairro</label>
+<select class="bg-surface-container-lowest border-none rounded-lg text-xs font-semibold py-2.5 focus:ring-1 focus:ring-primary shadow-sm">
+<option>Todos os Bairros</option>
+<option>Centro Histórico</option>
+<option>Jardim América</option>
+<option>Vila Mariana</option>
+</select>
+</div>
+<div class="flex flex-col space-y-2">
+<label class="text-[10px] font-black text-slate-500 uppercase">Status</label>
+<select class="bg-surface-container-lowest border-none rounded-lg text-xs font-semibold py-2.5 focus:ring-1 focus:ring-primary shadow-sm">
+<option>Qualquer Status</option>
+<option>Aberto</option>
+<option>Em Andamento</option>
+<option>Resolvido</option>
+</select>
+</div>
+<div class="flex flex-col space-y-2">
+<label class="text-[10px] font-black text-slate-500 uppercase">Criticidade</label>
+<select class="bg-surface-container-lowest border-none rounded-lg text-xs font-semibold py-2.5 focus:ring-1 focus:ring-primary shadow-sm">
+<option>Todas</option>
+<option>Alta</option>
+<option>Média</option>
+<option>Baixa</option>
+</select>
+</div>
+</div>
+</section>
+<!-- Table Section -->
+<div class="bg-surface-container-lowest rounded-xl overflow-hidden border border-outline-variant/15 shadow-sm">
+<div class="px-8 py-5 border-b border-surface-container flex items-center justify-between bg-surface-container-lowest/50">
+<h4 class="font-headline font-bold text-primary flex items-center space-x-2">
+<span class="material-symbols-outlined text-secondary">database</span>
+<span>Base de Dados de Ocorrências</span>
+</h4>
+<span class="text-xs font-medium text-slate-500">Exibindo 12 de 1,420 registros</span>
+</div>
+<div class="overflow-x-auto no-scrollbar">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-low/50">
+<th class="px-8 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest">ID</th>
+<th class="px-6 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest">Assunto</th>
+<th class="px-6 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest">Bairro</th>
+<th class="px-6 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest">Status</th>
+<th class="px-6 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest">Criticidade</th>
+<th class="px-6 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest">Data</th>
+<th class="px-8 py-4 text-right text-[10px] font-black text-slate-500 uppercase tracking-widest">Ações</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-surface-container">
+<!-- Row 1 -->
+<tr class="hover:bg-surface-container-low/30 transition-colors group">
+<td class="px-8 py-5 text-sm font-bold text-primary">#INC-9482</td>
+<td class="px-6 py-5">
+<div class="flex flex-col">
+<span class="text-sm font-semibold text-on-surface">Vazamento de Água</span>
+<span class="text-[10px] text-slate-400">Infraestrutura Urbana</span>
+</div>
+</td>
+<td class="px-6 py-5 text-sm text-on-surface-variant font-medium">Centro Histórico</td>
+<td class="px-6 py-5">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase bg-orange-100 text-orange-700">Em Andamento</span>
+</td>
+<td class="px-6 py-5">
+<span class="flex items-center space-x-1.5 text-error font-bold text-xs">
+<span class="w-1.5 h-1.5 rounded-full bg-error"></span>
+<span>Alta</span>
+</span>
+</td>
+<td class="px-6 py-5 text-sm text-slate-500">12 Out, 2023</td>
+<td class="px-8 py-5 text-right">
+<button class="text-primary hover:bg-primary-fixed p-2 rounded-lg transition-all group-hover:translate-x-1">
+<span class="material-symbols-outlined text-xl">open_in_new</span>
+</button>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="hover:bg-surface-container-low/30 transition-colors group">
+<td class="px-8 py-5 text-sm font-bold text-primary">#INC-8821</td>
+<td class="px-6 py-5">
+<div class="flex flex-col">
+<span class="text-sm font-semibold text-on-surface">Iluminação Pública</span>
+<span class="text-[10px] text-slate-400">Manutenção Elétrica</span>
+</div>
+</td>
+<td class="px-6 py-5 text-sm text-on-surface-variant font-medium">Jardim América</td>
+<td class="px-6 py-5">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase bg-secondary-container text-on-secondary-container">Resolvido</span>
+</td>
+<td class="px-6 py-5">
+<span class="flex items-center space-x-1.5 text-slate-500 font-bold text-xs">
+<span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span>
+<span>Baixa</span>
+</span>
+</td>
+<td class="px-6 py-5 text-sm text-slate-500">11 Out, 2023</td>
+<td class="px-8 py-5 text-right">
+<button class="text-primary hover:bg-primary-fixed p-2 rounded-lg transition-all group-hover:translate-x-1">
+<span class="material-symbols-outlined text-xl">open_in_new</span>
+</button>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="hover:bg-surface-container-low/30 transition-colors group">
+<td class="px-8 py-5 text-sm font-bold text-primary">#INC-9501</td>
+<td class="px-6 py-5">
+<div class="flex flex-col">
+<span class="text-sm font-semibold text-on-surface">Buraco na Via</span>
+<span class="text-[10px] text-slate-400">Pavimentação</span>
+</div>
+</td>
+<td class="px-6 py-5 text-sm text-on-surface-variant font-medium">Vila Mariana</td>
+<td class="px-6 py-5">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase bg-blue-100 text-blue-700">Aberto</span>
+</td>
+<td class="px-6 py-5">
+<span class="flex items-center space-x-1.5 text-tertiary font-bold text-xs">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary"></span>
+<span>Média</span>
+</span>
+</td>
+<td class="px-6 py-5 text-sm text-slate-500">12 Out, 2023</td>
+<td class="px-8 py-5 text-right">
+<button class="text-primary hover:bg-primary-fixed p-2 rounded-lg transition-all group-hover:translate-x-1">
+<span class="material-symbols-outlined text-xl">open_in_new</span>
+</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Pagination -->
+<div class="px-8 py-4 bg-surface-container-low/30 border-t border-surface-container flex items-center justify-between">
+<div class="flex space-x-1">
+<button class="px-3 py-1.5 rounded-lg bg-surface-container-lowest border border-outline-variant/30 text-xs font-bold shadow-sm">Anterior</button>
+<button class="px-3 py-1.5 rounded-lg bg-primary text-on-primary text-xs font-bold shadow-sm">1</button>
+<button class="px-3 py-1.5 rounded-lg bg-surface-container-lowest border border-outline-variant/30 text-xs font-bold shadow-sm">2</button>
+<button class="px-3 py-1.5 rounded-lg bg-surface-container-lowest border border-outline-variant/30 text-xs font-bold shadow-sm">3</button>
+<span class="px-3 py-1.5 text-slate-400 text-xs">...</span>
+<button class="px-3 py-1.5 rounded-lg bg-surface-container-lowest border border-outline-variant/30 text-xs font-bold shadow-sm">Próximo</button>
+</div>
+<div class="text-xs text-slate-500 font-medium">
+                        Itens por página: <select class="bg-transparent border-none font-bold text-primary focus:ring-0 p-0 text-xs">
+<option>10</option>
+<option>25</option>
+<option>50</option>
+</select>
+</div>
+</div>
+</div>
+<!-- Stats Overlay (Intentional Asymmetry) -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<div class="bg-primary p-6 rounded-2xl text-on-primary relative overflow-hidden group">
+<div class="absolute -right-4 -bottom-4 opacity-10 group-hover:scale-110 transition-transform duration-500">
+<span class="material-symbols-outlined text-9xl">warning</span>
+</div>
+<p class="text-[10px] font-black uppercase tracking-widest opacity-70 mb-1">Ocorrências Ativas</p>
+<h5 class="text-4xl font-extrabold mb-4">42</h5>
+<div class="flex items-center space-x-2 text-xs font-bold bg-white/10 w-fit px-2 py-1 rounded-lg">
+<span class="material-symbols-outlined text-sm">trending_up</span>
+<span>+12% esta semana</span>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-6 rounded-2xl border border-outline-variant/20 flex flex-col justify-between">
+<div>
+<p class="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-1">Tempo Médio de Resposta</p>
+<h5 class="text-4xl font-extrabold text-primary">2.4h</h5>
+</div>
+<div class="w-full h-2 bg-surface-container-high rounded-full overflow-hidden mt-6">
+<div class="w-3/4 h-full bg-secondary"></div>
+</div>
+<p class="text-[10px] text-slate-500 mt-2 font-medium italic">Meta institucional: abaixo de 3.0h</p>
+</div>
+<div class="bg-secondary-container p-6 rounded-2xl relative overflow-hidden">
+<div class="flex justify-between items-start">
+<div>
+<p class="text-[10px] font-black uppercase tracking-widest text-on-secondary-fixed-variant mb-1">Status das Equipes</p>
+<h5 class="text-2xl font-extrabold text-on-secondary-fixed">8/10 Equipes em Campo</h5>
+</div>
+<div class="bg-white/40 p-2 rounded-xl">
+<span class="material-symbols-outlined text-secondary">engineering</span>
+</div>
+</div>
+<button class="mt-4 text-xs font-bold text-on-secondary-fixed underline underline-offset-4 decoration-2">Ver Mapa de Equipes</button>
+</div>
+</div>
+</div>
+<!-- Decorative Background Element -->
+<div class="absolute -z-10 top-0 right-0 w-[600px] h-[600px] bg-primary/5 rounded-full blur-[120px]"></div>
+</main>
+</body></html>

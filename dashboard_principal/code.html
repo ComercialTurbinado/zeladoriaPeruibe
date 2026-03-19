@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+
+<html class="light" lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;600;700;800;900&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "secondary-fixed-dim": "#71dba6",
+              "surface": "#f8f9fb",
+              "secondary-container": "#8af5be",
+              "on-primary-fixed-variant": "#00458f",
+              "inverse-on-surface": "#eff1f3",
+              "primary": "#00346f",
+              "secondary-fixed": "#8df7c1",
+              "primary-fixed-dim": "#abc7ff",
+              "on-surface-variant": "#424751",
+              "surface-dim": "#d8dadc",
+              "on-primary-fixed": "#001b3f",
+              "surface-container-lowest": "#ffffff",
+              "on-error-container": "#93000a",
+              "secondary": "#006c47",
+              "surface-container": "#eceef0",
+              "surface-container-high": "#e6e8ea",
+              "surface-tint": "#255dad",
+              "on-primary": "#ffffff",
+              "inverse-surface": "#2d3133",
+              "outline-variant": "#c2c6d3",
+              "surface-container-highest": "#e0e3e5",
+              "error": "#ba1a1a",
+              "error-container": "#ffdad6",
+              "tertiary-fixed-dim": "#bac8d7",
+              "tertiary": "#293743",
+              "on-secondary-fixed": "#002113",
+              "on-surface": "#191c1e",
+              "tertiary-fixed": "#d5e4f4",
+              "surface-container-low": "#f2f4f6",
+              "on-secondary": "#ffffff",
+              "primary-container": "#004a99",
+              "on-secondary-container": "#00714b",
+              "outline": "#737783",
+              "primary-fixed": "#d7e2ff",
+              "on-secondary-fixed-variant": "#005235",
+              "on-tertiary-fixed-variant": "#3a4855",
+              "inverse-primary": "#abc7ff",
+              "on-background": "#191c1e",
+              "tertiary-container": "#404e5a",
+              "on-tertiary-container": "#b0bfce",
+              "on-tertiary": "#ffffff",
+              "on-tertiary-fixed": "#0f1d28",
+              "on-primary-container": "#9bbdff",
+              "surface-bright": "#f8f9fb",
+              "surface-variant": "#e0e3e5",
+              "on-error": "#ffffff",
+              "background": "#f8f9fb"
+            },
+            fontFamily: {
+              "headline": ["Public Sans"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-panel {
+            backdrop-filter: blur(20px);
+        }
+    </style>
+</head>
+<body class="bg-surface font-body text-on-surface selection:bg-primary-fixed-dim">
+<!-- SideNavBar -->
+<aside class="h-screen w-64 fixed left-0 top-0 flex flex-col bg-slate-100 dark:bg-slate-950 font-['Inter'] text-sm font-medium z-50">
+<div class="px-6 py-8 flex flex-col gap-1">
+<div class="flex items-center gap-3 mb-8">
+<div class="w-10 h-10 bg-primary-container rounded-full flex items-center justify-center text-on-primary-container">
+<span class="material-symbols-outlined" data-icon="account_balance">account_balance</span>
+</div>
+<div>
+<h2 class="font-['Public_Sans'] font-black text-blue-900 dark:text-white leading-tight">City Admin</h2>
+<p class="text-[10px] uppercase tracking-widest text-slate-500 font-bold">Intelligence Portal</p>
+</div>
+</div>
+<nav class="flex flex-col space-y-1">
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-blue-900 dark:text-white font-bold border-r-4 border-blue-700 dark:border-blue-500 bg-slate-200/50 dark:bg-slate-800/50 transition-transform translate-x-1" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span>Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600 dark:text-slate-400 hover:text-blue-700 dark:hover:text-blue-300 hover:bg-slate-200/30 dark:hover:bg-slate-800/30 transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="list_alt">list_alt</span>
+<span>Incidents</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600 dark:text-slate-400 hover:text-blue-700 dark:hover:text-blue-300 hover:bg-slate-200/30 dark:hover:bg-slate-800/30 transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="view_kanban">view_kanban</span>
+<span>Kanban Board</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600 dark:text-slate-400 hover:text-blue-700 dark:hover:text-blue-300 hover:bg-slate-200/30 dark:hover:bg-slate-800/30 transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="analytics">analytics</span>
+<span>Reports</span>
+</a>
+</nav>
+</div>
+<div class="mt-auto px-6 py-6 border-t border-slate-200/20">
+<button class="w-full bg-gradient-to-br from-primary to-primary-container text-on-primary py-3 rounded-xl font-semibold shadow-lg active:scale-95 duration-150 flex items-center justify-center gap-2 mb-6">
+<span class="material-symbols-outlined" data-icon="add_circle">add_circle</span>
+<span>Report New Incident</span>
+</button>
+<nav class="flex flex-col space-y-1">
+<a class="flex items-center gap-3 px-4 py-2 rounded-lg text-slate-600 dark:text-slate-400 hover:text-blue-700 transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+<span>Support</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 rounded-lg text-slate-600 dark:text-slate-400 hover:text-error transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="logout">logout</span>
+<span>Sign Out</span>
+</a>
+</nav>
+</div>
+</aside>
+<!-- Main Content -->
+<main class="ml-64 min-h-screen flex flex-col">
+<!-- TopNavBar -->
+<header class="bg-slate-50/70 dark:bg-slate-900/70 backdrop-blur-xl docked full-width top-0 sticky z-40 flex justify-between items-center w-full px-8 py-4">
+<div class="flex items-center gap-8">
+<h1 class="text-xl font-bold tracking-tight text-blue-900 dark:text-blue-50 font-headline">Civic Intelligence</h1>
+<div class="relative w-96">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-lg" data-icon="search">search</span>
+<input class="w-full bg-surface-container-highest border-none rounded-full pl-10 pr-4 py-2 text-sm focus:ring-2 focus:ring-primary/20 placeholder:text-slate-500" placeholder="Search operational data..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 text-slate-500 dark:text-slate-400 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 rounded-full transition-colors active:scale-95 duration-150">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="p-2 text-slate-500 dark:text-slate-400 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 rounded-full transition-colors active:scale-95 duration-150">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</button>
+<div class="h-8 w-px bg-slate-200 mx-2"></div>
+<div class="flex items-center gap-3">
+<span class="text-sm font-semibold text-blue-900 dark:text-blue-100 font-headline">Admin User</span>
+<img alt="Administrator profile photo" class="w-10 h-10 rounded-full object-cover" data-alt="Close up portrait of a professional administrator" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC6nXbhaV6_DlrVNs5dPWOrLsRDuvs2mn0G35r3x44oG7JbeMYKIXyojpiTkFD71sjrI4C0MNi93h8c9yhMJyj2CEq3aRbyzVm6DIAaK7W59la6qDFoz7we6qRxXa--AkGoMi1wgGnX0JuBX_jR0kRD1BL_VacD4wJv9vJy4PHwkns9K_CxE13KmV0NGjdhF5WvkYbgwp6ezfK1DKCWRZraHKC6XzbollX_Rg-agXBKRAXJBdZkvaGJLNZw_Pzjb0bMOgEi8IO48M8"/>
+</div>
+</div>
+</header>
+<section class="p-8 space-y-8">
+<!-- Hero Metrics: Bento Grid Layout -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+<div class="bg-surface-container-lowest p-6 rounded-xl flex flex-col justify-between h-40 group hover:bg-primary-fixed transition-all">
+<div class="flex justify-between items-start">
+<span class="text-on-surface-variant font-medium text-sm">Total Incidents</span>
+<div class="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center text-primary">
+<span class="material-symbols-outlined" data-icon="fact_check">fact_check</span>
+</div>
+</div>
+<div>
+<h3 class="text-3xl font-black text-on-surface font-headline leading-none">1,284</h3>
+<p class="text-secondary text-xs font-bold mt-2 flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]" data-icon="trending_up">trending_up</span>
+                            +12% vs last month
+                        </p>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-6 rounded-xl flex flex-col justify-between h-40 border-l-4 border-error">
+<div class="flex justify-between items-start">
+<span class="text-on-surface-variant font-medium text-sm">Pending</span>
+<div class="w-10 h-10 bg-error-container rounded-lg flex items-center justify-center text-on-error-container">
+<span class="material-symbols-outlined" data-icon="pending_actions">pending_actions</span>
+</div>
+</div>
+<div>
+<h3 class="text-3xl font-black text-on-surface font-headline leading-none">42</h3>
+<p class="text-on-surface-variant text-xs mt-2">Requires immediate attention</p>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-6 rounded-xl flex flex-col justify-between h-40 border-l-4 border-secondary">
+<div class="flex justify-between items-start">
+<span class="text-on-surface-variant font-medium text-sm">Resolved</span>
+<div class="w-10 h-10 bg-secondary-container rounded-lg flex items-center justify-center text-on-secondary-container">
+<span class="material-symbols-outlined" data-icon="check_circle">check_circle</span>
+</div>
+</div>
+<div>
+<h3 class="text-3xl font-black text-on-surface font-headline leading-none">1,190</h3>
+<p class="text-secondary text-xs font-bold mt-2">92.6% efficiency rate</p>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-6 rounded-xl flex flex-col justify-between h-40">
+<div class="flex justify-between items-start">
+<span class="text-on-surface-variant font-medium text-sm">Avg. Response</span>
+<div class="w-10 h-10 bg-tertiary-container rounded-lg flex items-center justify-center text-on-tertiary-container">
+<span class="material-symbols-outlined" data-icon="schedule">schedule</span>
+</div>
+</div>
+<div>
+<h3 class="text-3xl font-black text-on-surface font-headline leading-none">4.2h</h3>
+<p class="text-on-surface-variant text-xs mt-2">Benchmark: 6.0h</p>
+</div>
+</div>
+</div>
+<!-- Visualizations Row -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+<!-- Heatmap Section -->
+<div class="lg:col-span-2 bg-surface-container-lowest p-8 rounded-xl relative overflow-hidden group">
+<div class="flex justify-between items-center mb-8">
+<div>
+<h2 class="text-xl font-black text-on-surface font-headline uppercase tracking-tight">Mapa de Calor de Ocorrências</h2>
+<p class="text-on-surface-variant text-sm mt-1">Real-time density of incidents across urban sectors</p>
+</div>
+<div class="flex gap-2">
+<span class="px-3 py-1 bg-surface-container-high rounded-full text-[10px] font-bold uppercase">All Sectors</span>
+<span class="px-3 py-1 bg-primary text-on-primary rounded-full text-[10px] font-bold uppercase">Live</span>
+</div>
+</div>
+<div class="relative w-full h-[400px] rounded-xl overflow-hidden bg-slate-200">
+<img alt="Heatmap showing urban incident concentration" class="w-full h-full object-cover opacity-80 mix-blend-multiply" data-location="São Paulo" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD77vS9gzmHdbL1AaR52rdHW_a59Tld01kGXedAljQAzSh5e_PC9TWu9JinaTQhBzyUoue6nNyV326S17jOMnhwCKdroxDeDWe7wAuvgUHjGQGuwyvbQKAFLsDA80h7PRxIXe0rl1wp83322lVoioRbvkKYBwRJswutFOpm3Xh6rrHHrMH6-jNw14jiX_bLF69QNFsuL1sZ5V98nJbo-nEUgnchD9nR21dgCM7gXpQ-YtfvwcyIL_PtwJULi3Mf71gpWp7A5GfOt-E"/>
+<!-- Heatmap Overlay Mapped Elements -->
+<div class="absolute inset-0 bg-gradient-to-t from-primary/10 to-transparent"></div>
+<!-- Hotspots (Abstract visualization) -->
+<div class="absolute top-1/4 left-1/3 w-32 h-32 bg-error rounded-full blur-[60px] opacity-40"></div>
+<div class="absolute bottom-1/3 right-1/4 w-48 h-48 bg-secondary rounded-full blur-[80px] opacity-30"></div>
+<div class="absolute top-1/2 left-1/2 w-24 h-24 bg-primary rounded-full blur-[50px] opacity-40"></div>
+<!-- Floating Map Legend -->
+<div class="absolute bottom-4 left-4 glass-panel bg-white/70 p-4 rounded-lg shadow-xl border border-white/30">
+<div class="flex items-center gap-3 text-xs font-bold text-on-surface mb-2">
+<span class="w-3 h-3 rounded-full bg-error"></span> High Density
+                            </div>
+<div class="flex items-center gap-3 text-xs font-bold text-on-surface">
+<span class="w-3 h-3 rounded-full bg-secondary"></span> Moderate Activity
+                            </div>
+</div>
+</div>
+</div>
+<!-- Pie Chart Section: More Requested Services -->
+<div class="bg-surface-container-lowest p-8 rounded-xl flex flex-col">
+<div class="mb-10">
+<h2 class="text-xl font-black text-on-surface font-headline uppercase tracking-tight">Serviços Mais Solicitados</h2>
+<p class="text-on-surface-variant text-sm mt-1">Operational breakdown by category</p>
+</div>
+<div class="flex-1 flex flex-col justify-center items-center">
+<!-- Visual Pie Chart Simulation -->
+<div class="relative w-56 h-56 mb-10">
+<svg class="w-full h-full -rotate-90" viewbox="0 0 100 100">
+<circle class="transition-all" cx="50" cy="50" fill="transparent" r="40" stroke="#00346f" stroke-dasharray="251.2" stroke-dashoffset="150.7" stroke-width="20"></circle>
+<circle cx="50" cy="50" fill="transparent" r="40" stroke="#006c47" stroke-dasharray="251.2" stroke-dashoffset="200.9" stroke-width="20" style="stroke-dashoffset: 213.52"></circle>
+<circle cx="50" cy="50" fill="transparent" r="40" stroke="#eceef0" stroke-dasharray="251.2" stroke-dashoffset="238.64" stroke-width="20" style="stroke-dashoffset: 238.64"></circle>
+</svg>
+<div class="absolute inset-0 flex flex-col items-center justify-center">
+<span class="text-3xl font-black text-primary font-headline">40%</span>
+<span class="text-[10px] font-bold text-on-surface-variant uppercase tracking-tighter">Iluminação</span>
+</div>
+</div>
+<div class="w-full space-y-4">
+<div class="flex items-center justify-between p-3 rounded-lg bg-primary-fixed-dim/20">
+<div class="flex items-center gap-3">
+<div class="w-3 h-3 rounded-full bg-primary"></div>
+<span class="text-sm font-bold text-blue-900">Zeladoria de Iluminação</span>
+</div>
+<span class="text-sm font-black text-blue-900">40%</span>
+</div>
+<div class="flex items-center justify-between p-3">
+<div class="flex items-center gap-3">
+<div class="w-3 h-3 rounded-full bg-secondary"></div>
+<span class="text-sm font-medium text-on-surface-variant">Limpeza Urbana</span>
+</div>
+<span class="text-sm font-bold text-on-surface-variant">25%</span>
+</div>
+<div class="flex items-center justify-between p-3">
+<div class="flex items-center gap-3">
+<div class="w-3 h-3 rounded-full bg-surface-container-highest"></div>
+<span class="text-sm font-medium text-on-surface-variant">Segurança Pública</span>
+</div>
+<span class="text-sm font-bold text-on-surface-variant">35%</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Recent Activity Feed: High End Card List -->
+<div class="bg-surface-container-lowest p-8 rounded-xl">
+<div class="flex justify-between items-center mb-6">
+<div>
+<h2 class="text-xl font-black text-on-surface font-headline uppercase tracking-tight">Recent Activity Feed</h2>
+<p class="text-on-surface-variant text-sm">Real-time log of administrative actions</p>
+</div>
+<button class="text-primary text-xs font-bold uppercase flex items-center gap-2 hover:bg-primary/5 px-4 py-2 rounded-lg transition-colors">
+                        View Full Log <span class="material-symbols-outlined text-[18px]" data-icon="chevron_right">chevron_right</span>
+</button>
+</div>
+<div class="space-y-4">
+<div class="flex items-center gap-6 p-4 rounded-xl hover:bg-surface-container-low transition-colors group">
+<div class="w-12 h-12 bg-secondary/10 text-secondary rounded-full flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined" data-icon="task_alt">task_alt</span>
+</div>
+<div class="flex-1">
+<h4 class="font-bold text-on-surface">Incident #4290 Resolved</h4>
+<p class="text-sm text-on-surface-variant">Light pole repair completed in Sector 7G by Municipal Maintenance Team.</p>
+</div>
+<div class="text-right shrink-0">
+<p class="text-xs font-bold text-on-surface">Just Now</p>
+<p class="text-[10px] text-on-surface-variant uppercase">Operations</p>
+</div>
+</div>
+<div class="flex items-center gap-6 p-4 rounded-xl hover:bg-surface-container-low transition-colors group">
+<div class="w-12 h-12 bg-primary/10 text-primary rounded-full flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined" data-icon="report">report</span>
+</div>
+<div class="flex-1">
+<h4 class="font-bold text-on-surface">High Volume Alert</h4>
+<p class="text-sm text-on-surface-variant">Abnormal density detected in Central District regarding waste management requests.</p>
+</div>
+<div class="text-right shrink-0">
+<p class="text-xs font-bold text-on-surface">14 mins ago</p>
+<p class="text-[10px] text-on-surface-variant uppercase">Intelligence</p>
+</div>
+</div>
+<div class="flex items-center gap-6 p-4 rounded-xl hover:bg-surface-container-low transition-colors group">
+<div class="w-12 h-12 bg-tertiary-container/10 text-tertiary-fixed-dim rounded-full flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined" data-icon="assignment_ind">assignment_ind</span>
+</div>
+<div class="flex-1">
+<h4 class="font-bold text-on-surface">Resource Reallocation</h4>
+<p class="text-sm text-on-surface-variant">Inspector Almeida assigned to high-priority infrastructure audit.</p>
+</div>
+<div class="text-right shrink-0">
+<p class="text-xs font-bold text-on-surface">2 hours ago</p>
+<p class="text-[10px] text-on-surface-variant uppercase">Personnel</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Signature Footer Text -->
+<footer class="p-8 mt-auto text-center">
+<p class="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">Civic Intelligence Platform © 2024 • Secured Administrative Gateway</p>
+</footer>
+</main>
+</body></html>
