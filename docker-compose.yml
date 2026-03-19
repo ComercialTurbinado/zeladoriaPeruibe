@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  zeladoria-api:
+    build:
+      context: ./zeladoria-api
+    restart: unless-stopped
+    ports:
+      - "3001:3001"
+    environment:
+      - MONGODB_URI=${MONGODB_URI}
+      - JWT_SECRET=${JWT_SECRET}
+      - JWT_EXPIRES_IN=${JWT_EXPIRES_IN:-24h}
+      - PORT=3001
+      - NODE_ENV=production
+      - CORS_ORIGIN=${CORS_ORIGIN}
+      - N8N_WEBHOOK_STATUS_URL=${N8N_WEBHOOK_STATUS_URL}
+      - N8N_WEBHOOK_TOKEN=${N8N_WEBHOOK_TOKEN}
+
+  zeladoria-dashboard:
+    build:
+      context: ./zeladoria-dashboard
+      args:
+        VITE_API_BASE_URL: ${VITE_API_BASE_URL}
+        VITE_USE_MOCK_API: "false"
+        VITE_STORAGE_URL: ${VITE_STORAGE_URL}
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    depends_on:
+      - zeladoria-api

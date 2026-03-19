@@ -4,3 +4,10 @@ dist/
 .DS_Store
 *.local
 *.log
+.claude/
+dashboard_principal/
+detalhes_da_ocorr_ncia/
+kanban_de_status/
+listagem_de_ocorr_ncias/
+tela_de_login_gestores/
+civic_horizon/
