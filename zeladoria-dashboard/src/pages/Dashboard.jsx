@@ -7,47 +7,35 @@ import {
 import { MapContainer, TileLayer, CircleMarker, Popup } from 'react-leaflet'
 import {
   AlertCircle, CheckCircle2, Clock, TrendingUp,
-  Users, Timer, Star, ArrowUpRight,
+  Timer, Star, ArrowUpRight, ArrowRight,
 } from 'lucide-react'
 import { dashboardAPI, ocorrenciasAPI } from '../api/zeladoria.js'
 import Header from '../components/Header.jsx'
-import { StatusBadge, CriticidadeBadge } from '../components/StatusBadge.jsx'
+import { StatusBadge } from '../components/StatusBadge.jsx'
 import { CATEGORIAS } from '../data/mockData.js'
+import { formatDistanceToNow } from 'date-fns'
+import { ptBR } from 'date-fns/locale'
 
-function StatCard({ icon: Icon, label, value, sub, color = 'blue', trend }) {
-  const colors = {
-    blue: 'bg-blue-50 text-blue-600',
-    red: 'bg-red-50 text-red-600',
-    yellow: 'bg-yellow-50 text-yellow-600',
-    green: 'bg-green-50 text-green-600',
-    purple: 'bg-purple-50 text-purple-600',
-  }
+function StatCard({ icon: Icon, label, value, sub, iconBg = 'bg-blue-50', iconColor = 'text-blue-600', trend, borderColor }) {
   return (
-    <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 hover:shadow-md transition">
-      <div className="flex items-start justify-between mb-3">
-        <div className={`p-2.5 rounded-xl ${colors[color]}`}>
+    <div className={`bg-white rounded-xl p-6 flex flex-col justify-between h-40 hover:shadow-md transition-shadow border border-slate-100 ${borderColor ? `border-l-4 ${borderColor}` : ''}`}>
+      <div className="flex justify-between items-start">
+        <span className="text-on-surface-variant font-medium text-sm">{label}</span>
+        <div className={`w-10 h-10 ${iconBg} rounded-lg flex items-center justify-center ${iconColor}`}>
           <Icon className="w-5 h-5" />
         </div>
-        {trend !== undefined && (
-          <span className={`text-xs font-medium flex items-center gap-0.5 ${trend >= 0 ? 'text-green-600' : 'text-red-500'}`}>
-            <ArrowUpRight className={`w-3 h-3 ${trend < 0 ? 'rotate-180' : ''}`} />
-            {Math.abs(trend)}%
-          </span>
+      </div>
+      <div>
+        <h3 className="text-3xl font-headline font-black text-on-surface leading-none">{value}</h3>
+        {sub && (
+          <p className={`text-xs font-bold mt-2 flex items-center gap-1 ${trend !== undefined && trend >= 0 ? 'text-secondary' : trend !== undefined ? 'text-error' : 'text-on-surface-variant'}`}>
+            {trend !== undefined && <TrendingUp className="w-3 h-3" />}
+            {sub}
+          </p>
         )}
       </div>
-      <p className="text-3xl font-bold text-gray-900">{value}</p>
-      <p className="text-sm font-medium text-gray-600 mt-0.5">{label}</p>
-      {sub && <p className="text-xs text-gray-400 mt-1">{sub}</p>}
     </div>
   )
-}
-
-const CALOR_COLORS = {
-  ABERTO: '#ef4444',
-  TRIAGEM: '#f59e0b',
-  ANALISE: '#3b82f6',
-  EXECUCAO: '#8b5cf6',
-  CONCLUIDO: '#22c55e',
 }
 
 export default function Dashboard() {
@@ -83,7 +71,7 @@ export default function Dashboard() {
   useEffect(() => { carregar() }, [])
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-surface">
       <Header
         title="Dashboard"
         subtitle="Visão geral das ocorrências do município"
@@ -91,92 +79,76 @@ export default function Dashboard() {
         loading={loading}
       />
 
-      <div className="p-6 space-y-6">
-        {/* Stats Cards */}
+      <div className="p-8 space-y-8">
+        {/* KPI Cards */}
         {stats && (
-          <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
-            <StatCard icon={AlertCircle} label="Total" value={stats.total} color="blue" trend={12} />
-            <StatCard icon={AlertCircle} label="Abertas" value={stats.abertas} color="red" sub="Aguardando triagem" />
-            <StatCard icon={Clock} label="Em andamento" value={stats.em_andamento} color="yellow" />
-            <StatCard icon={CheckCircle2} label="Concluídas" value={stats.concluidas} color="green" trend={8} />
-            <StatCard icon={Timer} label="Média resolução" value={`${stats.media_resolucao_horas}h`} color="purple" />
-            <StatCard icon={Star} label="Satisfação" value={`${stats.nps_satisfacao}%`} color="green" trend={3} />
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
+            <StatCard
+              icon={AlertCircle}
+              label="Total de Ocorrências"
+              value={stats.total?.toLocaleString('pt-BR')}
+              sub={`+12% vs mês anterior`}
+              trend={12}
+              iconBg="bg-blue-50"
+              iconColor="text-blue-600"
+            />
+            <StatCard
+              icon={Clock}
+              label="Pendentes"
+              value={stats.abertas}
+              sub="Requer atenção imediata"
+              iconBg="bg-red-50"
+              iconColor="text-red-600"
+              borderColor="border-red-500"
+            />
+            <StatCard
+              icon={CheckCircle2}
+              label="Resolvidas"
+              value={stats.concluidas?.toLocaleString('pt-BR')}
+              sub={`${stats.total ? Math.round((stats.concluidas / stats.total) * 100) : 0}% taxa de eficiência`}
+              iconBg="bg-green-50"
+              iconColor="text-green-600"
+              borderColor="border-green-500"
+            />
+            <StatCard
+              icon={Timer}
+              label="Tempo Médio de Resposta"
+              value={`${stats.media_resolucao_horas}h`}
+              sub="Meta: abaixo de 3h"
+              iconBg="bg-purple-50"
+              iconColor="text-purple-600"
+            />
           </div>
         )}
 
-        {/* Charts Row */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Gráfico de Pizza - Categorias */}
-          <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
-            <h3 className="text-sm font-semibold text-gray-700 mb-4">Ocorrências por Categoria</h3>
-            <ResponsiveContainer width="100%" height={260}>
-              <PieChart>
-                <Pie
-                  data={categorias}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={60}
-                  outerRadius={100}
-                  paddingAngle={3}
-                  dataKey="value"
-                >
-                  {categorias.map((entry, i) => (
-                    <Cell key={i} fill={entry.fill} />
-                  ))}
-                </Pie>
-                <Tooltip
-                  formatter={(value, name) => [`${value} ocorrências`, name]}
-                  contentStyle={{ borderRadius: 8, border: 'none', boxShadow: '0 4px 20px rgba(0,0,0,.1)' }}
-                />
-                <Legend iconType="circle" iconSize={8} />
-              </PieChart>
-            </ResponsiveContainer>
-          </div>
-
-          {/* Tendência Semanal */}
-          <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
-            <h3 className="text-sm font-semibold text-gray-700 mb-4">Tendência Semanal</h3>
-            <ResponsiveContainer width="100%" height={260}>
-              <BarChart data={tendencia} barSize={10} barGap={4}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
-                <XAxis dataKey="dia" tick={{ fontSize: 12 }} axisLine={false} tickLine={false} />
-                <YAxis tick={{ fontSize: 12 }} axisLine={false} tickLine={false} />
-                <Tooltip
-                  contentStyle={{ borderRadius: 8, border: 'none', boxShadow: '0 4px 20px rgba(0,0,0,.1)' }}
-                />
-                <Legend iconType="circle" iconSize={8} />
-                <Bar dataKey="abertas" name="Abertas" fill="#ef4444" radius={[4, 4, 0, 0]} />
-                <Bar dataKey="concluidas" name="Concluídas" fill="#22c55e" radius={[4, 4, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
-
-        {/* Mapa + Recentes */}
+        {/* Mapa + Donut */}
         <div className="grid grid-cols-1 xl:grid-cols-5 gap-6">
           {/* Mapa de Calor */}
-          <div className="xl:col-span-3 bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-            <div className="px-5 py-4 border-b border-gray-100">
-              <h3 className="text-sm font-semibold text-gray-700">Mapa de Ocorrências</h3>
-              <p className="text-xs text-gray-400 mt-0.5">Distribuição geográfica · últimos 30 dias</p>
+          <div className="xl:col-span-3 bg-white rounded-xl border border-slate-100 overflow-hidden shadow-sm">
+            <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
+              <div>
+                <h3 className="font-headline font-bold text-primary">Mapa de Calor de Ocorrências</h3>
+                <p className="text-xs text-on-surface-variant mt-0.5">Densidade em tempo real por setor urbano</p>
+              </div>
+              <span className="text-xs font-bold bg-primary text-white px-3 py-1 rounded-full">Ao Vivo</span>
             </div>
             <div style={{ height: 360 }}>
               <MapContainer
-                center={[-23.5505, -46.6333]}
-                zoom={14}
+                center={[-23.9999, -46.3833]}
+                zoom={13}
                 style={{ height: '100%', width: '100%' }}
                 scrollWheelZoom={false}
               >
                 <TileLayer
                   url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                  attribution='© <a href="https://openstreetmap.org">OpenStreetMap</a>'
+                  attribution='© OpenStreetMap'
                 />
                 {mapaData.map((p, i) => (
                   <CircleMarker
                     key={i}
                     center={[p.lat, p.lng]}
                     radius={8 + p.intensidade * 3}
-                    fillColor={CALOR_COLORS.ABERTO}
+                    fillColor="#ef4444"
                     color="white"
                     weight={2}
                     fillOpacity={0.75}
@@ -193,41 +165,87 @@ export default function Dashboard() {
             </div>
           </div>
 
-          {/* Ocorrências Recentes */}
-          <div className="xl:col-span-2 bg-white rounded-2xl shadow-sm border border-gray-100">
-            <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
-              <div>
-                <h3 className="text-sm font-semibold text-gray-700">Ocorrências Recentes</h3>
-                <p className="text-xs text-gray-400 mt-0.5">Últimas registradas</p>
-              </div>
-              <Link
-                to="/ocorrencias"
-                className="text-xs text-blue-600 hover:text-blue-800 font-medium flex items-center gap-1"
-              >
-                Ver todas <ArrowUpRight className="w-3 h-3" />
-              </Link>
+          {/* Serviços Mais Solicitados */}
+          <div className="xl:col-span-2 bg-white rounded-xl border border-slate-100 shadow-sm">
+            <div className="px-6 py-4 border-b border-slate-100">
+              <h3 className="font-headline font-bold text-primary">Serviços Mais Solicitados</h3>
+              <p className="text-xs text-on-surface-variant mt-0.5">Distribuição por categoria</p>
             </div>
-            <div className="divide-y divide-gray-50">
-              {recentes.map((oc) => (
-                <Link
-                  key={oc.id}
-                  to={`/ocorrencias/${oc.id}`}
-                  className="flex items-start gap-3 px-5 py-3.5 hover:bg-gray-50 transition group"
-                >
-                  <span className="text-2xl mt-0.5 leading-none">
-                    {CATEGORIAS[oc.categoria]?.icon}
-                  </span>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="text-xs font-mono text-gray-400">{oc.protocolo}</span>
-                      <StatusBadge status={oc.status} />
+            <div className="p-4">
+              <ResponsiveContainer width="100%" height={220}>
+                <PieChart>
+                  <Pie
+                    data={categorias}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={65}
+                    outerRadius={95}
+                    paddingAngle={3}
+                    dataKey="value"
+                  >
+                    {categorias.map((entry, i) => (
+                      <Cell key={i} fill={entry.fill} />
+                    ))}
+                  </Pie>
+                  <Tooltip
+                    formatter={(value, name) => [`${value} ocorrências`, name]}
+                    contentStyle={{ borderRadius: 8, border: 'none', boxShadow: '0 4px 20px rgba(0,0,0,.1)' }}
+                  />
+                </PieChart>
+              </ResponsiveContainer>
+              <div className="space-y-2 px-2">
+                {categorias.slice(0, 4).map((cat, i) => (
+                  <div key={i} className="flex items-center justify-between text-sm">
+                    <div className="flex items-center gap-2">
+                      <span className="w-3 h-3 rounded-full flex-shrink-0" style={{ backgroundColor: cat.fill }} />
+                      <span className="text-on-surface-variant text-xs">{cat.name}</span>
                     </div>
-                    <p className="text-sm text-gray-700 truncate">{oc.descricao}</p>
-                    <p className="text-xs text-gray-400 mt-0.5">{oc.bairro}</p>
+                    <span className="font-bold text-on-surface text-xs">
+                      {categorias.reduce((a, c) => a + c.value, 0) > 0
+                        ? Math.round((cat.value / categorias.reduce((a, c) => a + c.value, 0)) * 100)
+                        : 0}%
+                    </span>
                   </div>
-                </Link>
-              ))}
+                ))}
+              </div>
             </div>
+          </div>
+        </div>
+
+        {/* Recent Activity Feed */}
+        <div className="bg-white rounded-xl border border-slate-100 shadow-sm">
+          <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
+            <div>
+              <h3 className="font-headline font-bold text-primary">Recent Activity Feed</h3>
+              <p className="text-xs text-on-surface-variant mt-0.5">Registro em tempo real de ações administrativas</p>
+            </div>
+            <Link to="/ocorrencias" className="text-xs font-bold text-primary hover:underline flex items-center gap-1">
+              Ver tudo <ArrowRight className="w-3 h-3" />
+            </Link>
+          </div>
+          <div className="divide-y divide-slate-50">
+            {recentes.map((oc) => (
+              <Link
+                key={oc.id}
+                to={`/ocorrencias/${oc.id}`}
+                className="flex items-start gap-4 px-6 py-4 hover:bg-surface-container-low/30 transition group"
+              >
+                <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center flex-shrink-0 text-lg">
+                  {CATEGORIAS[oc.categoria]?.icon || '📋'}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-0.5">
+                    <span className="text-xs font-bold text-primary">#{oc.protocolo}</span>
+                    <StatusBadge status={oc.status} />
+                  </div>
+                  <p className="text-sm text-on-surface truncate">{oc.descricao}</p>
+                  <p className="text-xs text-on-surface-variant mt-0.5">{oc.bairro}</p>
+                </div>
+                <span className="text-xs text-slate-400 whitespace-nowrap flex-shrink-0">
+                  {formatDistanceToNow(new Date(oc.created_at), { locale: ptBR, addSuffix: true })}
+                </span>
+              </Link>
+            ))}
           </div>
         </div>
       </div>

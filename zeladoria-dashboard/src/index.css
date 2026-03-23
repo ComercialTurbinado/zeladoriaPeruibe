@@ -1,6 +1,18 @@
+@import url('https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;600;700;800;900&family=Inter:wght@400;500;600&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: #f8f9fb;
+  color: #191c1e;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Public Sans', sans-serif;
+}
 
 /* Leaflet fix para z-index dentro do layout */
 .leaflet-pane,

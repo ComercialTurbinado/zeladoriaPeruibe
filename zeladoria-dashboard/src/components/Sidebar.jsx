@@ -4,11 +4,10 @@ import {
   AlertCircle,
   KanbanSquare,
   Map,
-  Settings,
   Shield,
-  ChevronLeft,
-  ChevronRight,
   LogOut,
+  Plus,
+  HelpCircle,
 } from 'lucide-react'
 import { useAuth } from '../context/AuthContext.jsx'
 
@@ -19,78 +18,74 @@ const navItems = [
   { to: '/mapa', icon: Map, label: 'Mapa' },
 ]
 
-export default function Sidebar({ collapsed, onToggle }) {
+export default function Sidebar() {
   const { admin, logout } = useAuth()
 
   return (
-    <aside
-      className={`
-        flex flex-col bg-blue-900 text-white transition-all duration-300 ease-in-out
-        ${collapsed ? 'w-16' : 'w-64'}
-        min-h-screen shrink-0
-      `}
-    >
+    <aside className="fixed inset-y-0 left-0 w-64 flex flex-col bg-slate-100 border-r border-slate-200 z-20">
       {/* Logo */}
-      <div className={`flex items-center gap-3 px-4 py-5 border-b border-blue-800 ${collapsed ? 'justify-center' : ''}`}>
-        <div className="flex-shrink-0 w-9 h-9 bg-blue-600 rounded-xl flex items-center justify-center">
+      <div className="flex items-center gap-3 px-5 py-5 border-b border-slate-200">
+        <div className="flex-shrink-0 w-9 h-9 bg-blue-900 rounded-full flex items-center justify-center">
           <Shield className="w-5 h-5 text-white" />
         </div>
-        {!collapsed && (
-          <div>
-            <p className="font-bold text-sm leading-tight">Zeladoria</p>
-            <p className="text-blue-300 text-xs">Painel Admin</p>
-          </div>
-        )}
+        <div>
+          <p className="font-bold text-blue-900 text-sm leading-tight">Zeladoria</p>
+          <p className="text-gray-400 text-[10px] uppercase tracking-widest">Painel Admin</p>
+        </div>
       </div>
 
-      {/* Nav Items */}
-      <nav className="flex-1 py-4 space-y-1 px-2">
+      {/* Nav */}
+      <nav className="flex-1 py-4 space-y-0.5">
         {navItems.map(({ to, icon: Icon, label }) => (
           <NavLink
             key={to}
             to={to}
             className={({ isActive }) =>
-              `flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-150 group
+              `flex items-center gap-3 px-5 py-2.5 transition-all duration-150
                ${isActive
-                 ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/50'
-                 : 'text-blue-200 hover:bg-blue-800 hover:text-white'
-               }
-               ${collapsed ? 'justify-center' : ''}`
+                 ? 'border-r-4 border-blue-700 bg-slate-200/50 translate-x-1 font-bold text-blue-900'
+                 : 'text-slate-600 hover:bg-slate-200/40 hover:text-slate-800'
+               }`
             }
-            title={collapsed ? label : undefined}
           >
             <Icon className="w-5 h-5 flex-shrink-0" />
-            {!collapsed && <span className="text-sm font-medium">{label}</span>}
+            <span className="text-sm">{label}</span>
           </NavLink>
         ))}
       </nav>
 
-      {/* Admin Info + Logout */}
-      <div className="border-t border-blue-800 p-3 space-y-1">
-        {!collapsed && admin && (
-          <div className="px-3 py-2 mb-1">
-            <p className="text-sm font-medium text-white truncate">{admin.nome}</p>
-            <p className="text-xs text-blue-300 truncate">{admin.email}</p>
-          </div>
-        )}
-        <button
-          onClick={logout}
-          className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-blue-200 hover:bg-red-600 hover:text-white transition-all duration-150 ${collapsed ? 'justify-center' : ''}`}
-          title={collapsed ? 'Sair' : undefined}
-        >
-          <LogOut className="w-5 h-5 flex-shrink-0" />
-          {!collapsed && <span className="text-sm font-medium">Sair</span>}
+      {/* Bottom actions */}
+      <div className="px-4 pb-2 space-y-2">
+        {/* Nova Ocorrência button */}
+        <button className="w-full flex items-center justify-center gap-2 bg-blue-900 hover:bg-blue-800 text-white text-sm font-semibold py-2.5 rounded-xl transition-colors">
+          <Plus className="w-4 h-4" />
+          Nova Ocorrência
         </button>
+
+        {/* Support + Sair */}
+        <div className="flex items-center gap-2 pt-1">
+          <button className="flex items-center gap-1.5 text-slate-500 hover:text-slate-700 text-xs transition-colors">
+            <HelpCircle className="w-4 h-4" />
+            Suporte
+          </button>
+          <span className="text-slate-300">·</span>
+          <button
+            onClick={logout}
+            className="flex items-center gap-1.5 text-slate-500 hover:text-red-600 text-xs transition-colors"
+          >
+            <LogOut className="w-4 h-4" />
+            Sair
+          </button>
+        </div>
       </div>
 
-      {/* Toggle button */}
-      <button
-        onClick={onToggle}
-        className="absolute top-20 -right-3 bg-blue-700 hover:bg-blue-600 text-white rounded-full w-6 h-6 flex items-center justify-center shadow-lg border-2 border-blue-900 transition-colors"
-        style={{ position: 'sticky', bottom: 20, alignSelf: 'flex-end', marginRight: collapsed ? -12 : -12 }}
-      >
-        {collapsed ? <ChevronRight className="w-3 h-3" /> : <ChevronLeft className="w-3 h-3" />}
-      </button>
+      {/* Admin info at very bottom */}
+      {admin && (
+        <div className="px-5 py-3 border-t border-slate-200 bg-slate-100">
+          <p className="text-xs font-semibold text-slate-700 truncate">{admin.nome}</p>
+          <p className="text-[10px] text-slate-400 truncate">{admin.email}</p>
+        </div>
+      )}
     </aside>
   )
 }
