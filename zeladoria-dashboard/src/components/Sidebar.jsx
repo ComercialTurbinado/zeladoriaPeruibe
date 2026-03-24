@@ -18,7 +18,7 @@ const navItems = [
   { to: '/mapa', icon: Map, label: 'Mapa' },
 ]
 
-export default function Sidebar() {
+export default function Sidebar({ onNovaOcorrencia }) {
   const { admin, logout } = useAuth()
 
   return (
@@ -57,7 +57,10 @@ export default function Sidebar() {
       {/* Bottom actions */}
       <div className="px-4 pb-2 space-y-2">
         {/* Nova Ocorrência button */}
-        <button className="w-full flex items-center justify-center gap-2 bg-blue-900 hover:bg-blue-800 text-white text-sm font-semibold py-2.5 rounded-xl transition-colors">
+        <button
+          onClick={onNovaOcorrencia}
+          className="w-full flex items-center justify-center gap-2 bg-blue-900 hover:bg-blue-800 active:scale-95 text-white text-sm font-semibold py-2.5 rounded-xl transition-all"
+        >
           <Plus className="w-4 h-4" />
           Nova Ocorrência
         </button>

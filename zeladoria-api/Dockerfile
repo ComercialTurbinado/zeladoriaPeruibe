@@ -10,8 +10,12 @@ RUN npm ci --only=production
 # Copiar código fonte
 COPY src/ ./src/
 
+# Criar diretório de uploads e ajustar permissões
+RUN mkdir -p /app/uploads && chmod 777 /app/uploads
+
 # Usuário não-root para segurança
-RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup && \
+    chown -R appuser:appgroup /app
 USER appuser
 
 EXPOSE 3001

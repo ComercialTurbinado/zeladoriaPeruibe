@@ -1,13 +1,6 @@
 // =============================================================
 // CAMADA DE API — Zeladoria Dashboard
 // =============================================================
-// Esta camada abstrai todas as chamadas ao backend.
-// Em modo MOCK (padrão), retorna dados locais.
-// Em modo REAL, conecta ao zeladoria-api (Node.js + MongoDB).
-//
-// Para ativar modo real: VITE_USE_MOCK_API=false no .env
-// =============================================================
-
 import axios from 'axios'
 import {
   mockOcorrencias,
@@ -23,7 +16,7 @@ const USE_MOCK = import.meta.env.VITE_USE_MOCK_API !== 'false'
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001',
   headers: { 'Content-Type': 'application/json' },
-  timeout: 10000,
+  timeout: 15000,
 })
 
 api.interceptors.request.use((config) => {
@@ -43,6 +36,16 @@ api.interceptors.response.use(
   }
 )
 
+// ─── Normaliza doc MongoDB: adiciona id = _id.toString() ─────
+function normalize(doc) {
+  if (!doc) return doc
+  return { ...doc, id: doc._id ? String(doc._id) : doc.id }
+}
+
+function normalizeList(list) {
+  return Array.isArray(list) ? list.map(normalize) : list
+}
+
 // ─── Helper para simular latência no mock ────────────────────
 const delay = (ms = 300) => new Promise((r) => setTimeout(r, ms))
 
@@ -50,24 +53,15 @@ const delay = (ms = 300) => new Promise((r) => setTimeout(r, ms))
 // AUTH
 // =============================================================
 export const authAPI = {
-  /**
-   * Login do administrador
-   * n8n endpoint: POST /webhook/admin/login
-   * Body: { email, senha }
-   * Returns: { token, admin: { id, nome, email, role } }
-   */
   async login(email, senha) {
     if (USE_MOCK) {
       await delay(600)
-      const admin = mockAdmins.find(
-        (a) => a.email === email && a.senha === senha
-      )
+      const admin = mockAdmins.find((a) => a.email === email && a.senha === senha)
       if (!admin) throw new Error('Credenciais inválidas')
       const fakeToken = btoa(JSON.stringify({ id: admin.id, email: admin.email, exp: Date.now() + 86400000 }))
       return { token: fakeToken, admin: { id: admin.id, nome: admin.nome, email: admin.email, role: admin.role } }
     }
-    const res = await api.post('/admin/login', { email, senha })
-    return res
+    return api.post('/admin/login', { email, senha })
   },
 
   async logout() {
@@ -80,10 +74,6 @@ export const authAPI = {
 // OCORRÊNCIAS
 // =============================================================
 export const ocorrenciasAPI = {
-  /**
-   * Listar ocorrências com filtros
-   * n8n endpoint: GET /webhook/ocorrencias?status=&categoria=&bairro=&criticidade=&page=&limit=
-   */
   async listar(filtros = {}) {
     if (USE_MOCK) {
       await delay(400)
@@ -101,35 +91,51 @@ export const ocorrenciasAPI = {
             o.bairro.toLowerCase().includes(q)
         )
       }
-      return { data: lista, total: lista.length, page: 1, totalPages: 1 }
+      const page = parseInt(filtros.page) || 1
+      const limit = parseInt(filtros.limit) || 10
+      const start = (page - 1) * limit
+      const paginated = lista.slice(start, start + limit)
+      return { data: paginated, total: lista.length, page, totalPages: Math.ceil(lista.length / limit) }
     }
-    return api.get('/ocorrencias', { params: filtros })
+    const res = await api.get('/ocorrencias', { params: filtros })
+    return { ...res, data: normalizeList(res.data) }
   },
 
-  /**
-   * Buscar ocorrência por ID
-   * n8n endpoint: GET /webhook/ocorrencias/:id
-   */
   async buscarPorId(id) {
     if (USE_MOCK) {
       await delay(300)
-      const item = mockOcorrencias.find((o) => o.id === Number(id))
+      const item = mockOcorrencias.find((o) => String(o.id) === String(id))
       if (!item) throw new Error('Ocorrência não encontrada')
       return item
     }
-    return api.get(`/ocorrencias/${id}`)
+    const res = await api.get(`/ocorrencias/${id}`)
+    return normalize(res)
   },
 
-  /**
-   * Atualizar status de uma ocorrência
-   * n8n endpoint: PATCH /webhook/ocorrencias/:id/status
-   * Body: { status, observacao }
-   * Side-effect n8n: Envia notificação WhatsApp ao cidadão via Evolution API
-   */
+  async criar(dados) {
+    if (USE_MOCK) {
+      await delay(600)
+      const novo = {
+        id: Date.now(),
+        protocolo: `ZLD-${new Date().getFullYear()}-${String(mockOcorrencias.length + 1).padStart(3, '0')}`,
+        status: 'ABERTO',
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        logs: [{ status_anterior: null, status_novo: 'ABERTO', admin: 'Admin Dashboard', data: new Date().toISOString() }],
+        midias: [],
+        ...dados,
+      }
+      mockOcorrencias.unshift(novo)
+      return novo
+    }
+    const res = await api.post('/ocorrencias', dados)
+    return normalize(res)
+  },
+
   async atualizarStatus(id, novoStatus, observacao = '') {
     if (USE_MOCK) {
       await delay(500)
-      const idx = mockOcorrencias.findIndex((o) => o.id === Number(id))
+      const idx = mockOcorrencias.findIndex((o) => String(o.id) === String(id))
       if (idx === -1) throw new Error('Ocorrência não encontrada')
       const antiga = mockOcorrencias[idx]
       mockOcorrencias[idx] = {
@@ -138,37 +144,24 @@ export const ocorrenciasAPI = {
         updated_at: new Date().toISOString(),
         logs: [
           ...antiga.logs,
-          {
-            status_anterior: antiga.status,
-            status_novo: novoStatus,
-            data: new Date().toISOString(),
-            admin: 'Admin Dashboard',
-            observacao,
-          },
+          { status_anterior: antiga.status, status_novo: novoStatus, data: new Date().toISOString(), admin: 'Admin Dashboard', observacao },
         ],
       }
       return mockOcorrencias[idx]
     }
-    return api.patch(`/ocorrencias/${id}/status`, { status: novoStatus, observacao })
+    const res = await api.patch(`/ocorrencias/${id}/status`, { status: novoStatus, observacao })
+    return normalize(res)
   },
 
-  /**
-   * Exportar lista de ocorrências como CSV
-   * n8n endpoint: GET /webhook/ocorrencias/export?formato=csv
-   */
   async exportar(filtros = {}, formato = 'csv') {
     if (USE_MOCK) {
       await delay(800)
-      const { data } = await ocorrenciasAPI.listar(filtros)
+      const { data } = await ocorrenciasAPI.listar({ ...filtros, limit: 9999 })
       const headers = ['Protocolo', 'Categoria', 'Bairro', 'Status', 'Criticidade', 'Data', 'Cidadão']
       const rows = data.map((o) => [
-        o.protocolo,
-        o.categoria,
-        o.bairro,
-        o.status,
-        o.criticidade,
+        o.protocolo, o.categoria, o.bairro, o.status, o.criticidade,
         new Date(o.created_at).toLocaleString('pt-BR'),
-        o.cidadao.anonimo ? 'Anônimo' : o.cidadao.nome,
+        o.cidadao?.anonimo ? 'Anônimo' : o.cidadao?.nome,
       ])
       const csv = [headers, ...rows].map((r) => r.join(',')).join('\n')
       const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
@@ -180,7 +173,6 @@ export const ocorrenciasAPI = {
       URL.revokeObjectURL(url)
       return { success: true }
     }
-    // Em modo real: recebe blob CSV do n8n
     const response = await api.get('/ocorrencias/export', {
       params: { ...filtros, formato },
       responseType: 'blob',
@@ -192,16 +184,30 @@ export const ocorrenciasAPI = {
     a.click()
     return { success: true }
   },
+
+  async uploadMidia(id, file) {
+    if (USE_MOCK) {
+      await delay(800)
+      const idx = mockOcorrencias.findIndex((o) => String(o.id) === String(id))
+      if (idx === -1) throw new Error('Ocorrência não encontrada')
+      const fakeUrl = URL.createObjectURL(file)
+      const tipo = file.type.startsWith('video') ? 'VIDEO' : 'FOTO'
+      mockOcorrencias[idx].midias.push({ url: fakeUrl, tipo })
+      return mockOcorrencias[idx]
+    }
+    const form = new FormData()
+    form.append('midia', file)
+    const res = await api.post(`/ocorrencias/${id}/midias`, form, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    })
+    return normalize(res)
+  },
 }
 
 // =============================================================
 // DASHBOARD / ESTATÍSTICAS
 // =============================================================
 export const dashboardAPI = {
-  /**
-   * Estatísticas gerais do dashboard
-   * n8n endpoint: GET /webhook/dashboard/stats
-   */
   async getStats() {
     if (USE_MOCK) {
       await delay(300)
@@ -210,10 +216,6 @@ export const dashboardAPI = {
     return api.get('/dashboard/stats')
   },
 
-  /**
-   * Dados para gráfico de pizza (por categoria)
-   * n8n endpoint: GET /webhook/dashboard/categorias
-   */
   async getCategorias() {
     if (USE_MOCK) {
       await delay(300)
@@ -222,10 +224,6 @@ export const dashboardAPI = {
     return api.get('/dashboard/categorias')
   },
 
-  /**
-   * Tendência semanal de abertura e resolução
-   * n8n endpoint: GET /webhook/dashboard/tendencia?periodo=7d
-   */
   async getTendencia(periodo = '7d') {
     if (USE_MOCK) {
       await delay(300)
@@ -234,10 +232,6 @@ export const dashboardAPI = {
     return api.get('/dashboard/tendencia', { params: { periodo } })
   },
 
-  /**
-   * Dados para mapa de calor (lat/lng + contagem por ponto)
-   * n8n endpoint: GET /webhook/dashboard/mapa-calor
-   */
   async getMapaCalor() {
     if (USE_MOCK) {
       await delay(400)

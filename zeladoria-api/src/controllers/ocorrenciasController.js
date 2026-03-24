@@ -1,3 +1,4 @@
+const path = require('path')
 const Ocorrencia = require('../models/Ocorrencia')
 const axios = require('axios')
 
@@ -24,7 +25,6 @@ async function notificarCidadao(ocorrencia, statusNovo) {
     )
     console.log(`📱 WhatsApp notificado: ${ocorrencia.protocolo} → ${statusNovo}`)
   } catch (err) {
-    // Não bloqueia a resposta se o n8n estiver fora
     console.warn(`⚠️  Falha ao notificar n8n: ${err.message}`)
   }
 }
@@ -56,16 +56,12 @@ function buildFiltro(query) {
 async function listar(req, res) {
   try {
     const page = Math.max(1, parseInt(req.query.page) || 1)
-    const limit = Math.min(100, parseInt(req.query.limit) || 50)
+    const limit = Math.min(200, parseInt(req.query.limit) || 10)
     const skip = (page - 1) * limit
     const filtro = buildFiltro(req.query)
 
     const [data, total] = await Promise.all([
-      Ocorrencia.find(filtro)
-        .sort({ created_at: -1 })
-        .skip(skip)
-        .limit(limit)
-        .lean(),
+      Ocorrencia.find(filtro).sort({ created_at: -1 }).skip(skip).limit(limit).lean(),
       Ocorrencia.countDocuments(filtro),
     ])
 
@@ -113,10 +109,75 @@ async function exportar(req, res) {
     const filename = `ocorrencias_${new Date().toISOString().slice(0, 10)}.csv`
     res.setHeader('Content-Type', 'text/csv; charset=utf-8')
     res.setHeader('Content-Disposition', `attachment; filename="${filename}"`)
-    return res.send('\uFEFF' + csv) // BOM para Excel reconhecer UTF-8
+    return res.send('\uFEFF' + csv)
   } catch (err) {
     console.error('Erro exportar:', err)
     return res.status(500).json({ erro: 'Erro ao exportar dados' })
+  }
+}
+
+// GET /ocorrencias/consulta?protocolo=ZLD-2024-001&telefone=5511999990001
+// Usado pelo N8N Flow 2 para verificação pelo cidadão
+async function consultar(req, res) {
+  try {
+    const { protocolo, telefone } = req.query
+
+    if (!protocolo && !telefone) {
+      return res.status(400).json({ erro: 'Informe protocolo ou telefone para consulta' })
+    }
+
+    let ocorrencias = []
+
+    if (protocolo) {
+      // Busca exata por protocolo
+      const oc = await Ocorrencia.findOne({
+        protocolo: { $regex: new RegExp(`^${protocolo.trim()}$`, 'i') },
+      }).lean()
+      if (oc) ocorrencias = [oc]
+    } else if (telefone) {
+      // Normaliza telefone: remove caracteres não numéricos
+      const tel = telefone.replace(/\D/g, '')
+      ocorrencias = await Ocorrencia.find({
+        'cidadao.telefone': { $regex: tel, $options: 'i' },
+      })
+        .sort({ created_at: -1 })
+        .limit(10)
+        .lean()
+    }
+
+    if (ocorrencias.length === 0) {
+      return res.json({
+        encontrado: false,
+        mensagem: protocolo
+          ? `Protocolo ${protocolo} não encontrado`
+          : 'Nenhuma ocorrência registrada para este número',
+        ocorrencias: [],
+      })
+    }
+
+    // Retorna resumo seguro (sem dados sensíveis de outros cidadãos)
+    const resumo = ocorrencias.map(o => ({
+      protocolo: o.protocolo,
+      categoria: o.categoria,
+      descricao: o.descricao,
+      status: o.status,
+      criticidade: o.criticidade,
+      bairro: o.bairro,
+      rua: o.rua,
+      created_at: o.created_at,
+      updated_at: o.updated_at,
+      ultimo_log: o.logs?.[o.logs.length - 1] || null,
+      total_atualizacoes: o.logs?.length || 0,
+    }))
+
+    return res.json({
+      encontrado: true,
+      total: resumo.length,
+      ocorrencias: resumo,
+    })
+  } catch (err) {
+    console.error('Erro consultar:', err)
+    return res.status(500).json({ erro: 'Erro ao consultar ocorrência' })
   }
 }
 
@@ -154,7 +215,6 @@ async function atualizarStatus(req, res) {
 
     const statusAnterior = ocorrencia.status
 
-    // Adiciona log no array embutido
     ocorrencia.logs.push({
       status_anterior: statusAnterior,
       status_novo: status,
@@ -166,7 +226,6 @@ async function atualizarStatus(req, res) {
     ocorrencia.status = status
     await ocorrencia.save()
 
-    // Notifica cidadão via n8n (assíncrono, não bloqueia)
     if (!ocorrencia.cidadao?.anonimo && ocorrencia.cidadao?.telefone) {
       notificarCidadao(ocorrencia, status)
     }
@@ -193,10 +252,17 @@ async function criar(req, res) {
       return res.status(400).json({ erro: 'protocolo e categoria são obrigatórios' })
     }
 
+    // Valida categoria
+    const CATEGORIAS_VALIDAS = ['BURACO', 'ILUMINACAO', 'LIXO', 'ARVORE', 'CALCADA', 'AGUA', 'OUTRO']
+    const categoriaUpper = categoria?.toUpperCase()
+    if (!CATEGORIAS_VALIDAS.includes(categoriaUpper)) {
+      return res.status(400).json({ erro: `Categoria inválida. Use: ${CATEGORIAS_VALIDAS.join(', ')}` })
+    }
+
     const ocorrencia = await Ocorrencia.create({
-      protocolo,
+      protocolo: protocolo.toUpperCase(),
       cidadao,
-      categoria,
+      categoria: categoriaUpper,
       descricao,
       criticidade: criticidade || 'MEDIA',
       bairro,
@@ -223,4 +289,33 @@ async function criar(req, res) {
   }
 }
 
-module.exports = { listar, exportar, buscarPorId, atualizarStatus, criar }
+// POST /ocorrencias/:id/midias — upload de foto/vídeo
+async function uploadMidia(req, res) {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ erro: 'Nenhum arquivo enviado' })
+    }
+
+    const ocorrencia = await Ocorrencia.findById(req.params.id)
+    if (!ocorrencia) {
+      return res.status(404).json({ erro: 'Ocorrência não encontrada' })
+    }
+
+    const tipo = req.file.mimetype.startsWith('video') ? 'VIDEO' : 'FOTO'
+    const baseUrl = process.env.API_BASE_URL || `http://localhost:${process.env.PORT || 3001}`
+    const url = `${baseUrl}/uploads/${req.file.filename}`
+
+    ocorrencia.midias.push({ url, tipo })
+    await ocorrencia.save()
+
+    return res.json(ocorrencia.toObject())
+  } catch (err) {
+    if (err.name === 'CastError') {
+      return res.status(404).json({ erro: 'ID inválido' })
+    }
+    console.error('Erro uploadMidia:', err)
+    return res.status(500).json({ erro: 'Erro ao salvar mídia' })
+  }
+}
+
+module.exports = { listar, exportar, consultar, buscarPorId, atualizarStatus, criar, uploadMidia }

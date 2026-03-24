@@ -1,10 +1,9 @@
 import { useState, useEffect, useCallback } from 'react'
 import { Link } from 'react-router-dom'
-import { Search, Download, FileText, ExternalLink } from 'lucide-react'
+import { Search, Download, FileText, ExternalLink, ChevronLeft, ChevronRight } from 'lucide-react'
 import { ocorrenciasAPI } from '../api/zeladoria.js'
 import { CATEGORIAS, STATUS, CRITICIDADE } from '../data/mockData.js'
 import Header from '../components/Header.jsx'
-import { StatusBadge } from '../components/StatusBadge.jsx'
 import { format } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 import toast from 'react-hot-toast'
@@ -15,46 +14,68 @@ const STATUS_BADGE_MAP = {
   ANALISE:   'bg-purple-100 text-purple-700',
   EXECUCAO:  'bg-orange-100 text-orange-700',
   CONCLUIDO: 'bg-green-100 text-green-700',
+  CANCELADO: 'bg-gray-100 text-gray-500',
 }
 
 const CRIT_MAP = {
-  ALTA:  { dot: 'bg-red-500',   text: 'text-red-600',   label: 'Alta' },
-  MEDIA: { dot: 'bg-slate-400', text: 'text-slate-500',  label: 'Média' },
-  BAIXA: { dot: 'bg-slate-300', text: 'text-slate-400',  label: 'Baixa' },
+  ALTA:   { dot: 'bg-red-500',    text: 'text-red-600',   label: 'Alta' },
+  CRITICA:{ dot: 'bg-red-700',    text: 'text-red-800',   label: 'Crítica' },
+  MEDIA:  { dot: 'bg-slate-400',  text: 'text-slate-500', label: 'Média' },
+  BAIXA:  { dot: 'bg-slate-300',  text: 'text-slate-400', label: 'Baixa' },
 }
+
+const LIMIT = 10
 
 export default function Ocorrencias() {
   const [ocorrencias, setOcorrencias] = useState([])
   const [total, setTotal] = useState(0)
+  const [totalPages, setTotalPages] = useState(1)
+  const [page, setPage] = useState(1)
   const [loading, setLoading] = useState(true)
   const [exportando, setExportando] = useState(false)
   const [filtros, setFiltros] = useState({ busca: '', status: '', categoria: '', bairro: '', criticidade: '' })
 
-  const carregar = useCallback(async () => {
+  const carregar = useCallback(async (p = page) => {
     setLoading(true)
     try {
-      const params = Object.fromEntries(Object.entries(filtros).filter(([, v]) => v !== ''))
+      const params = {
+        ...Object.fromEntries(Object.entries(filtros).filter(([, v]) => v !== '')),
+        page: p,
+        limit: LIMIT,
+      }
       const res = await ocorrenciasAPI.listar(params)
       setOcorrencias(res.data)
       setTotal(res.total)
+      setTotalPages(res.totalPages || 1)
+      setPage(res.page || p)
     } catch {
       toast.error('Erro ao carregar ocorrências')
     } finally {
       setLoading(false)
     }
+  }, [filtros, page])
+
+  // Reset to page 1 when filters change
+  useEffect(() => {
+    setPage(1)
   }, [filtros])
 
   useEffect(() => {
-    const timer = setTimeout(carregar, 300)
+    const timer = setTimeout(() => carregar(page), 300)
     return () => clearTimeout(timer)
-  }, [carregar])
+  }, [filtros, page]) // eslint-disable-line
 
-  async function handleExportar() {
+  function goToPage(p) {
+    if (p < 1 || p > totalPages) return
+    setPage(p)
+  }
+
+  async function handleExportar(formato = 'csv') {
     setExportando(true)
     try {
       const params = Object.fromEntries(Object.entries(filtros).filter(([, v]) => v !== ''))
-      await ocorrenciasAPI.exportar(params, 'csv')
-      toast.success('CSV exportado!')
+      await ocorrenciasAPI.exportar(params, formato)
+      toast.success(`${formato.toUpperCase()} exportado!`)
     } catch {
       toast.error('Erro ao exportar')
     } finally {
@@ -66,9 +87,19 @@ export default function Ocorrencias() {
     setFiltros(prev => ({ ...prev, [key]: value }))
   }
 
+  // Build page numbers to display (max 5 around current)
+  function getPageNumbers() {
+    const pages = []
+    const delta = 2
+    const left = Math.max(1, page - delta)
+    const right = Math.min(totalPages, page + delta)
+    for (let i = left; i <= right; i++) pages.push(i)
+    return pages
+  }
+
   return (
     <div className="min-h-screen bg-surface">
-      <Header title="Ocorrências" subtitle="Listagem de Ocorrências" onRefresh={carregar} loading={loading} />
+      <Header title="Ocorrências" subtitle="Listagem de Ocorrências" onRefresh={() => carregar(page)} loading={loading} />
 
       <div className="p-8 space-y-8 max-w-7xl mx-auto w-full">
         {/* Page Header */}
@@ -78,11 +109,19 @@ export default function Ocorrencias() {
             <p className="text-on-surface-variant max-w-xl text-sm">Gerencie e analise as ocorrências em tempo real. Utilize os filtros avançados para otimizar a resposta das equipes de campo.</p>
           </div>
           <div className="flex items-center gap-3">
-            <button onClick={handleExportar} disabled={exportando} className="bg-surface-container-high text-on-surface px-4 py-2.5 rounded-xl font-bold text-sm flex items-center gap-2 hover:bg-surface-container-highest transition-all border border-slate-200 disabled:opacity-60">
+            <button
+              onClick={() => handleExportar('csv')}
+              disabled={exportando}
+              className="bg-surface-container-high text-on-surface px-4 py-2.5 rounded-xl font-bold text-sm flex items-center gap-2 hover:bg-surface-container-highest transition-all border border-slate-200 disabled:opacity-60"
+            >
               <FileText className="w-4 h-4" />
               Exportar CSV
             </button>
-            <button className="bg-surface-container-high text-on-surface px-4 py-2.5 rounded-xl font-bold text-sm flex items-center gap-2 hover:bg-surface-container-highest transition-all border border-slate-200">
+            <button
+              onClick={() => handleExportar('pdf')}
+              disabled={exportando}
+              className="bg-surface-container-high text-on-surface px-4 py-2.5 rounded-xl font-bold text-sm flex items-center gap-2 hover:bg-surface-container-highest transition-all border border-slate-200 disabled:opacity-60"
+            >
               <Download className="w-4 h-4" />
               Exportar PDF
             </button>
@@ -112,6 +151,7 @@ export default function Ocorrencias() {
                 <option value="Centro">Centro</option>
                 <option value="Vila Nova">Vila Nova</option>
                 <option value="Jardim América">Jardim América</option>
+                <option value="Bela Vista">Bela Vista</option>
               </select>
             </div>
             <div className="flex flex-col gap-2">
@@ -138,7 +178,9 @@ export default function Ocorrencias() {
               <span className="text-secondary">🗄️</span>
               Base de Dados de Ocorrências
             </h4>
-            <span className="text-xs font-medium text-slate-500">Exibindo {ocorrencias.length} de {total} registros</span>
+            <span className="text-xs font-medium text-slate-500">
+              Exibindo {ocorrencias.length === 0 ? 0 : (page - 1) * LIMIT + 1}–{Math.min(page * LIMIT, total)} de {total} registros
+            </span>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
@@ -179,7 +221,7 @@ export default function Ocorrencias() {
                         </span>
                       </td>
                       <td className="px-6 py-5 text-sm text-slate-500">
-                        {format(new Date(oc.created_at), 'dd MMM, yyyy', { locale: ptBR })}
+                        {oc.created_at ? format(new Date(oc.created_at), 'dd MMM, yyyy', { locale: ptBR }) : '—'}
                       </td>
                       <td className="px-6 py-5 text-right">
                         <Link to={`/ocorrencias/${oc.id}`} className="inline-flex items-center justify-center p-2 text-primary hover:bg-blue-50 rounded-lg transition-all group-hover:translate-x-0.5">
@@ -192,14 +234,44 @@ export default function Ocorrencias() {
               </tbody>
             </table>
           </div>
-          {/* Pagination placeholder */}
+
+          {/* Pagination */}
           <div className="px-8 py-4 bg-slate-50/50 border-t border-slate-100 flex items-center justify-between">
-            <div className="flex gap-1">
-              {['Anterior', '1', '2', '3', 'Próximo'].map((p, i) => (
-                <button key={i} className={`px-3 py-1.5 rounded-lg text-xs font-bold ${p === '1' ? 'bg-primary text-white' : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'}`}>{p}</button>
+            <div className="flex items-center gap-1">
+              <button
+                onClick={() => goToPage(page - 1)}
+                disabled={page <= 1 || loading}
+                className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-bold bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+              >
+                <ChevronLeft className="w-3.5 h-3.5" /> Anterior
+              </button>
+
+              {getPageNumbers().map(p => (
+                <button
+                  key={p}
+                  onClick={() => goToPage(p)}
+                  disabled={loading}
+                  className={`w-8 h-8 rounded-lg text-xs font-bold transition-all ${
+                    p === page
+                      ? 'bg-primary text-white shadow-sm'
+                      : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'
+                  }`}
+                >
+                  {p}
+                </button>
               ))}
+
+              <button
+                onClick={() => goToPage(page + 1)}
+                disabled={page >= totalPages || loading}
+                className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-bold bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+              >
+                Próximo <ChevronRight className="w-3.5 h-3.5" />
+              </button>
             </div>
-            <span className="text-xs text-slate-500">Itens por página: <strong className="text-primary">10</strong></span>
+            <span className="text-xs text-slate-500">
+              Página <strong className="text-primary">{page}</strong> de <strong className="text-primary">{totalPages}</strong> · {total} registros
+            </span>
           </div>
         </div>
 
@@ -207,9 +279,9 @@ export default function Ocorrencias() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="bg-primary p-6 rounded-2xl text-white relative overflow-hidden">
             <p className="text-[10px] font-black uppercase tracking-widest opacity-70 mb-1">Ocorrências Ativas</p>
-            <h5 className="text-4xl font-headline font-extrabold mb-4">{ocorrencias.filter(o => o.status !== 'CONCLUIDO').length}</h5>
+            <h5 className="text-4xl font-headline font-extrabold mb-4">{ocorrencias.filter(o => o.status !== 'CONCLUIDO' && o.status !== 'CANCELADO').length}</h5>
             <div className="flex items-center gap-2 text-xs font-bold bg-white/10 w-fit px-2 py-1 rounded-lg">
-              <span>↑ +12% esta semana</span>
+              <span>Total desta página</span>
             </div>
           </div>
           <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm flex flex-col justify-between">
@@ -227,14 +299,16 @@ export default function Ocorrencias() {
           <div className="bg-green-50 p-6 rounded-2xl border border-green-100">
             <div className="flex justify-between items-start mb-3">
               <div>
-                <p className="text-[10px] font-black uppercase tracking-widest text-green-700 mb-1">Status das Equipes</p>
-                <h5 className="text-2xl font-headline font-extrabold text-green-900">8/10 Equipes em Campo</h5>
+                <p className="text-[10px] font-black uppercase tracking-widest text-green-700 mb-1">Total de Registros</p>
+                <h5 className="text-2xl font-headline font-extrabold text-green-900">{total} Ocorrências</h5>
               </div>
               <div className="bg-white/60 p-2 rounded-xl">
-                <span className="text-2xl">👷</span>
+                <span className="text-2xl">📋</span>
               </div>
             </div>
-            <button className="text-xs font-bold text-green-700 underline underline-offset-4 decoration-2 hover:text-green-900 transition">Ver Mapa de Equipes</button>
+            <p className="text-xs font-medium text-green-700">
+              {ocorrencias.filter(o => o.status === 'CONCLUIDO').length} concluídas nesta página
+            </p>
           </div>
         </div>
       </div>

@@ -1,9 +1,12 @@
+import { useState } from 'react'
 import { Outlet, Navigate } from 'react-router-dom'
 import Sidebar from './Sidebar.jsx'
+import NovaOcorrenciaModal from './NovaOcorrenciaModal.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
 
 export default function Layout() {
   const { isAuthenticated, loading } = useAuth()
+  const [modalAberto, setModalAberto] = useState(false)
 
   if (loading) {
     return (
@@ -20,10 +23,17 @@ export default function Layout() {
 
   return (
     <div className="flex min-h-screen bg-surface">
-      <Sidebar />
+      <Sidebar onNovaOcorrencia={() => setModalAberto(true)} />
       <main className="flex-1 ml-64 min-h-screen">
         <Outlet />
       </main>
+
+      {modalAberto && (
+        <NovaOcorrenciaModal
+          onClose={() => setModalAberto(false)}
+          onCriada={() => setModalAberto(false)}
+        />
+      )}
     </div>
   )
 }

@@ -3,7 +3,7 @@ import { useParams, useNavigate, Link } from 'react-router-dom'
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet'
 import {
   ArrowLeft, MapPin, User, Phone, Calendar, Clock,
-  CheckCircle2, AlertTriangle, Image, Video, Send, ChevronRight,
+  CheckCircle2, AlertTriangle, Image, Video, Send, ChevronRight, Upload, X,
 } from 'lucide-react'
 import { ocorrenciasAPI } from '../api/zeladoria.js'
 import { CATEGORIAS, STATUS } from '../data/mockData.js'
@@ -24,6 +24,7 @@ export default function OcorrenciaDetalhe() {
   const [novoStatus, setNovoStatus] = useState('')
   const [observacao, setObservacao] = useState('')
   const [midiaAtiva, setMidiaAtiva] = useState(0)
+  const [uploadando, setUploadando] = useState(false)
 
   async function carregar() {
     setLoading(true)
@@ -40,6 +41,22 @@ export default function OcorrenciaDetalhe() {
   }
 
   useEffect(() => { carregar() }, [id])
+
+  async function handleUploadMidia(e) {
+    const file = e.target.files?.[0]
+    if (!file) return
+    setUploadando(true)
+    try {
+      const updated = await ocorrenciasAPI.uploadMidia(id, file)
+      setOc(updated)
+      toast.success('Mídia adicionada!')
+    } catch {
+      toast.error('Erro ao fazer upload')
+    } finally {
+      setUploadando(false)
+      e.target.value = ''
+    }
+  }
 
   async function handleAtualizarStatus() {
     if (!novoStatus || novoStatus === oc.status) {
@@ -132,9 +149,21 @@ export default function OcorrenciaDetalhe() {
             {/* Galeria de Mídias */}
             {oc.midias?.length > 0 && (
               <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
-                <h3 className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
-                  <Image className="w-4 h-4" /> Mídias anexadas ({oc.midias.length})
-                </h3>
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                    <Image className="w-4 h-4" /> Mídias anexadas ({oc.midias.length})
+                  </h3>
+                  <label className={`flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg cursor-pointer transition
+                    ${uploadando ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-blue-50 text-blue-700 hover:bg-blue-100'}`}>
+                    {uploadando ? (
+                      <div className="w-3.5 h-3.5 border-2 border-blue-400 border-t-transparent rounded-full animate-spin" />
+                    ) : (
+                      <Upload className="w-3.5 h-3.5" />
+                    )}
+                    {uploadando ? 'Enviando...' : 'Adicionar'}
+                    <input type="file" accept="image/*,video/mp4" className="hidden" onChange={handleUploadMidia} disabled={uploadando} />
+                  </label>
+                </div>
                 <div className="relative">
                   <img
                     src={oc.midias[midiaAtiva]?.url}
