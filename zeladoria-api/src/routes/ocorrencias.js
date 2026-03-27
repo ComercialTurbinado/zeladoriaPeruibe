@@ -38,6 +38,10 @@ router.get('/export', authMiddleware, ctrl.exportar)
 // GET /ocorrencias/consulta?protocolo=ZLD-2024-001 OU ?telefone=5511999990001
 router.get('/consulta', ctrl.consultar)
 
+// Status público — somente dados básicos (sem Authorization)
+// GET /ocorrencias/status?protocolo=ZLD-2024-001
+router.get('/status', ctrl.consultarStatusBasico)
+
 // CRUD
 router.get('/', authMiddleware, ctrl.listar)
 router.post('/', ctrl.criar)                                          // N8N sem auth

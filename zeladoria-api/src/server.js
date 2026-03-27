@@ -64,6 +64,7 @@ async function start() {
     console.log(`    GET    /ocorrencias`)
     console.log(`    POST   /ocorrencias`)
     console.log(`    GET    /ocorrencias/consulta?protocolo=&telefone=`)
+    console.log(`    GET    /ocorrencias/status?protocolo=`)
     console.log(`    GET    /ocorrencias/:id`)
     console.log(`    PATCH  /ocorrencias/:id/status`)
     console.log(`    POST   /ocorrencias/:id/midias`)
