@@ -181,56 +181,6 @@ async function consultar(req, res) {
   }
 }
 
-// GET /ocorrencias/status?protocolo=ZLD-2024-001
-// Usado para verificação rápida pelo cidadão (somente status/básicos)
-async function consultarStatusBasico(req, res) {
-  try {
-    const { protocolo } = req.query
-    if (!protocolo) {
-      return res.status(400).json({ erro: 'Informe protocolo para consulta' })
-    }
-
-    const protocoloNorm = String(protocolo).trim().toUpperCase()
-    const oc = await Ocorrencia.findOne({ protocolo: protocoloNorm }).lean()
-
-    if (!oc) {
-      return res.json({
-        encontrado: false,
-        mensagem: `Protocolo ${protocoloNorm} não encontrado`,
-        ocorrencia: null,
-      })
-    }
-
-    const ultimo = oc.logs?.[oc.logs.length - 1] || null
-    const ultimo_log = ultimo
-      ? {
-          status_anterior: ultimo.status_anterior,
-          status_novo: ultimo.status_novo,
-          observacao: ultimo.observacao,
-          data: ultimo.data,
-        }
-      : null
-
-    return res.json({
-      encontrado: true,
-      ocorrencia: {
-        protocolo: oc.protocolo,
-        status: oc.status,
-        criticidade: oc.criticidade,
-        categoria: oc.categoria,
-        bairro: oc.bairro,
-        rua: oc.rua,
-        updated_at: oc.updated_at,
-        total_atualizacoes: oc.logs?.length || 0,
-        ultimo_log,
-      },
-    })
-  } catch (err) {
-    console.error('Erro consultarStatusBasico:', err)
-    return res.status(500).json({ erro: 'Erro ao consultar status do protocolo' })
-  }
-}
-
 // GET /ocorrencias/:id
 async function buscarPorId(req, res) {
   try {
@@ -368,4 +318,4 @@ async function uploadMidia(req, res) {
   }
 }
 
-module.exports = { listar, exportar, consultar, consultarStatusBasico, buscarPorId, atualizarStatus, criar, uploadMidia }
+module.exports = { listar, exportar, consultar, buscarPorId, atualizarStatus, criar, uploadMidia }
