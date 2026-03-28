@@ -207,30 +207,42 @@ export default function OcorrenciaDetalhe() {
                   <MapPin className="w-4 h-4" /> Localização Exata
                 </h3>
               </div>
-              <div style={{ height: 280 }}>
-                <MapContainer
-                  center={[oc.latitude, oc.longitude]}
-                  zoom={16}
-                  style={{ height: '100%', width: '100%' }}
-                  scrollWheelZoom={false}
-                >
-                  <TileLayer
-                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                    attribution='© <a href="https://openstreetmap.org">OpenStreetMap</a>'
-                  />
-                  <Marker position={[oc.latitude, oc.longitude]}>
-                    <Popup>
-                      <div className="text-xs">
-                        <p className="font-bold">{oc.protocolo}</p>
-                        <p>{oc.rua}, {oc.bairro}</p>
-                      </div>
-                    </Popup>
-                  </Marker>
-                </MapContainer>
-              </div>
-              <div className="px-5 py-3 bg-gray-50 text-xs text-gray-500 font-mono">
-                📍 {oc.latitude.toFixed(6)}, {oc.longitude.toFixed(6)}
-              </div>
+              {oc.latitude && oc.longitude ? (
+                <>
+                  <div style={{ height: 280 }}>
+                    <MapContainer
+                      center={[oc.latitude, oc.longitude]}
+                      zoom={16}
+                      style={{ height: '100%', width: '100%' }}
+                      scrollWheelZoom={false}
+                    >
+                      <TileLayer
+                        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                        attribution='© <a href="https://openstreetmap.org">OpenStreetMap</a>'
+                      />
+                      <Marker position={[oc.latitude, oc.longitude]}>
+                        <Popup>
+                          <div className="text-xs">
+                            <p className="font-bold">{oc.protocolo}</p>
+                            <p>{oc.rua}, {oc.bairro}</p>
+                          </div>
+                        </Popup>
+                      </Marker>
+                    </MapContainer>
+                  </div>
+                  <div className="px-5 py-3 bg-gray-50 text-xs text-gray-500 font-mono">
+                    📍 {oc.latitude.toFixed(6)}, {oc.longitude.toFixed(6)}
+                  </div>
+                </>
+              ) : (
+                <div className="px-5 py-8 flex flex-col items-center justify-center text-center gap-2">
+                  <MapPin className="w-8 h-8 text-gray-300" />
+                  <p className="text-sm text-gray-400 font-medium">Localização não informada</p>
+                  <p className="text-xs text-gray-300">
+                    {oc.rua ? `${oc.rua}, ${oc.bairro}` : oc.bairro || 'Endereço não disponível'}
+                  </p>
+                </div>
+              )}
             </div>
 
             {/* Timeline de status */}
