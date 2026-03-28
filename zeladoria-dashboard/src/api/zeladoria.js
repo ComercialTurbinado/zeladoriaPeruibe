@@ -251,4 +251,61 @@ export const dashboardAPI = {
   },
 }
 
+// =============================================================
+// CONSULTA PÚBLICA DE STATUS (Portal do Cidadão)
+// Sem autenticação — endpoint público
+// =============================================================
+export async function consultarStatusPublico(protocolo) {
+  if (USE_MOCK) {
+    await delay(700)
+    // Busca no mock pelo protocolo
+    const item = mockOcorrencias.find(
+      (o) => o.protocolo?.toUpperCase() === protocolo.toUpperCase()
+    )
+    if (!item) {
+      // Retorna estrutura padrão de "não encontrado"
+      return {
+        ocorrencia: {
+          protocolo,
+          status: 'NAO_ENCONTRADO',
+          categoria: '-',
+          ultimo_log: null,
+          total_atualizacoes: 0,
+          created_at: null,
+          updated_at: null,
+        },
+      }
+    }
+    return {
+      ocorrencia: {
+        protocolo: item.protocolo,
+        status: item.status,
+        categoria: item.categoria,
+        descricao: item.descricao,
+        bairro: item.bairro,
+        rua: item.rua,
+        created_at: item.created_at,
+        updated_at: item.updated_at,
+        logs: item.logs || [],
+        ultimo_log: item.logs?.at(-1) || null,
+        total_atualizacoes: item.logs?.length || 0,
+      },
+    }
+  }
+
+  // Endpoint real — mesmo usado pelo bot WhatsApp
+  const res = await api.get('/ocorrencias/status', {
+    params: { protocolo },
+    // Consulta pública: sem token de auth
+    headers: {},
+  })
+
+  // Normaliza: aceita resposta direta { ocorrencia: {...} } ou { status, protocolo, ... }
+  if (res?.ocorrencia) return res
+  if (res?.status) {
+    return { ocorrencia: res }
+  }
+  return { ocorrencia: { protocolo, status: 'NAO_ENCONTRADO' } }
+}
+
 export default api

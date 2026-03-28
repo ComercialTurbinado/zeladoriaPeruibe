@@ -8,6 +8,7 @@ import {
   LogOut,
   Plus,
   HelpCircle,
+  Search,
 } from 'lucide-react'
 import { useAuth } from '../context/AuthContext.jsx'
 
@@ -64,6 +65,17 @@ export default function Sidebar({ onNovaOcorrencia }) {
           <Plus className="w-4 h-4" />
           Nova Ocorrência
         </button>
+
+        {/* Portal do Cidadão */}
+        <a
+          href="/consultar"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="w-full flex items-center justify-center gap-2 bg-slate-200 hover:bg-slate-300 active:scale-95 text-slate-700 text-sm font-medium py-2.5 rounded-xl transition-all"
+        >
+          <Search className="w-4 h-4" />
+          Portal do Cidadão
+        </a>
 
         {/* Support + Sair */}
         <div className="flex items-center gap-2 pt-1">

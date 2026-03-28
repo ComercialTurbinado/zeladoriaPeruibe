@@ -8,12 +8,15 @@ import Ocorrencias from './pages/Ocorrencias.jsx'
 import OcorrenciaDetalhe from './pages/OcorrenciaDetalhe.jsx'
 import Kanban from './pages/Kanban.jsx'
 import Mapa from './pages/Mapa.jsx'
+import ConsultarStatus from './pages/ConsultarStatus.jsx'
 
 export default function App() {
   return (
     <AuthProvider>
       <BrowserRouter>
         <Routes>
+          {/* Rota pública — sem login */}
+          <Route path="/consultar" element={<ConsultarStatus />} />
           <Route path="/login" element={<Login />} />
           <Route path="/" element={<Layout />}>
             <Route index element={<Navigate to="/dashboard" replace />} />
