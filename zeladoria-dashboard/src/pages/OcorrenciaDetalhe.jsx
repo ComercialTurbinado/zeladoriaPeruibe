@@ -231,7 +231,7 @@ export default function OcorrenciaDetalhe() {
                     </MapContainer>
                   </div>
                   <div className="px-5 py-3 bg-gray-50 text-xs text-gray-500 font-mono">
-                    📍 {oc.latitude.toFixed(6)}, {oc.longitude.toFixed(6)}
+                    📍 {oc.latitude?.toFixed(6)}, {oc.longitude?.toFixed(6)}
                   </div>
                 </>
               ) : (
