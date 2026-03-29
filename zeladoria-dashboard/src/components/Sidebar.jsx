@@ -30,7 +30,7 @@ export default function Sidebar({ onNovaOcorrencia }) {
           <Shield className="w-5 h-5 text-white" />
         </div>
         <div>
-          <p className="font-bold text-blue-900 text-sm leading-tight">Zeladoria</p>
+          <p className="font-bold text-blue-900 text-sm leading-tight">Zela Peruíbe</p>
           <p className="text-gray-400 text-[10px] uppercase tracking-widest">Painel Admin</p>
         </div>
       </div>

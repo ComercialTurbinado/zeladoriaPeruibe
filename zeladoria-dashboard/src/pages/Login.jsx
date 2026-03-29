@@ -20,7 +20,7 @@ export default function Login() {
     setLoading(true)
     try {
       await login(email, senha)
-      toast.success('Bem-vindo ao Painel de Zeladoria!')
+      toast.success('Bem-vindo ao Zela Peruíbe!')
       navigate(from, { replace: true })
     } catch (err) {
       toast.error(err.message || 'Credenciais inválidas')
@@ -45,7 +45,7 @@ export default function Login() {
             <div className="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mb-6">
               <Shield className="w-8 h-8 text-primary" />
             </div>
-            <h1 className="font-headline font-black text-3xl text-primary tracking-tight mb-2">Zeladoria</h1>
+            <h1 className="font-headline font-black text-3xl text-primary tracking-tight mb-2">Zela Peruíbe</h1>
             <p className="text-on-surface-variant font-medium text-xs tracking-widest uppercase">Painel Administrativo</p>
           </div>
 

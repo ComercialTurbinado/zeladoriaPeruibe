@@ -343,7 +343,7 @@ export default function ConsultarStatus() {
             <Shield className="w-5 h-5 text-white" />
           </div>
           <div>
-            <p className="font-bold text-white text-sm leading-tight">Zeladoria Urbana</p>
+            <p className="font-bold text-white text-sm leading-tight">Zela Peruíbe</p>
             <p className="text-blue-300 text-[10px] uppercase tracking-widest">Peruíbe • SP</p>
           </div>
         </div>
@@ -465,7 +465,7 @@ export default function ConsultarStatus() {
           {/* Rodapé */}
           <div className="mt-10 text-center">
             <p className="text-white/20 text-[11px]">
-              Canal oficial da Prefeitura de Peruíbe · Zeladoria Urbana
+              Canal oficial da Prefeitura de Peruíbe · Zela Peruíbe
             </p>
           </div>
 
