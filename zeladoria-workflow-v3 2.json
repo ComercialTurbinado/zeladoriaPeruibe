@@ -1,0 +1,2755 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "fromme-check",
+              "leftValue": "={{ $json.body.data.key.fromMe }}",
+              "rightValue": false,
+              "operator": {
+                "type": "boolean",
+                "operation": "false",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "20404c6d-82b5-4102-8b39-eb3d37598542",
+      "name": "00 - Filtro: Ignorar fromMe",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -48,
+        8384
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://n8n-srcleads-ffmpeg-api.dtna1d.easypanel.host/save-base64",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"folderPath\": \"/data/render/zela/imgs/{{ $('01 - Webhook WhatsApp3').item.json.body.data.key.id }}/{{ $('01 - Webhook WhatsApp3').item.json.body.data.key.remoteJid }}/\",\n  \"images\": [{ \"data\": \"{{ $json.data.base64 }}\", \"filename\": \"{{$json.fileName}}\" }]\n}",
+        "options": {
+          "timeout": 10000
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1200,
+        8560
+      ],
+      "id": "42b5a02e-de2c-4589-8909-0ccbbaac4ab6",
+      "name": "03f - Salvar Foto API",
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "url": "https://n8n-srcleads-zeladoria-api.dtna1d.easypanel.host/ocorrencias/consulta",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "telefone",
+              "value": "={{ $('01 - Webhook WhatsApp3').item.json.body.data.key.remoteJid.split('@')[0] }}"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          },
+          "timeout": 5000
+        }
+      },
+      "id": "896067bb-7831-4462-b737-203779296b79",
+      "name": "03i - Consultar Histórico API",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        2048,
+        8384
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "j-f1",
+              "name": "protocolo",
+              "value": "={{ $('02b - Gerar Protocolo3').item.json.protocolo }}",
+              "type": "string"
+            },
+            {
+              "id": "j-f2",
+              "name": "tipo",
+              "value": "={{ $if($('03g - Normalizar Dados Áudio3').isExecuted, $('03g - Normalizar Dados Áudio3').item.json.tipo, $('03h - Normalizar Dados Mídia/Texto3').item.json.tipo) }}",
+              "type": "string"
+            },
+            {
+              "id": "j-f3",
+              "name": "texto_cidadao",
+              "value": "={{ $if($('03g - Normalizar Dados Áudio3').isExecuted, $('03g - Normalizar Dados Áudio3').item.json.texto_cidadao, $('03h - Normalizar Dados Mídia/Texto3').item.json.texto_cidadao) }}",
+              "type": "string"
+            },
+            {
+              "id": "j-f4",
+              "name": "mediaUrl",
+              "value": "={{ $if($('03g - Normalizar Dados Áudio3').isExecuted, $('03g - Normalizar Dados Áudio3').item.json.mediaUrl, $('03h - Normalizar Dados Mídia/Texto3').item.json.mediaUrl) }}",
+              "type": "string"
+            },
+            {
+              "id": "j-f5",
+              "name": "lat",
+              "value": "={{ $if($('03g - Normalizar Dados Áudio3').isExecuted, $('03g - Normalizar Dados Áudio3').item.json.lat, $('03h - Normalizar Dados Mídia/Texto3').item.json.lat) }}",
+              "type": "string"
+            },
+            {
+              "id": "j-f6",
+              "name": "lng",
+              "value": "={{ $if($('03g - Normalizar Dados Áudio3').isExecuted, $('03g - Normalizar Dados Áudio3').item.json.lng, $('03h - Normalizar Dados Mídia/Texto3').item.json.lng) }}",
+              "type": "string"
+            },
+            {
+              "id": "j-f7",
+              "name": "tem_historico",
+              "value": "={{ !$json.error && (($json.ocorrencias?.length || $json.data?.length || $json.items?.length || 0) > 0 || ($json.total || 0) > 0) }}",
+              "type": "boolean"
+            },
+            {
+              "id": "j-f8",
+              "name": "total_chamados",
+              "value": "={{ $json.total || $json.ocorrencias?.length || $json.data?.length || $json.items?.length || 0 }}",
+              "type": "number"
+            },
+            {
+              "id": "j-f9",
+              "name": "ultimo_protocolo",
+              "value": "={{ ($json.ocorrencias || $json.data || $json.items || [])[0]?.protocolo || null }}",
+              "type": "string"
+            },
+            {
+              "id": "j-f10",
+              "name": "lista_protocolos",
+              "value": "={{ ($json.ocorrencias || $json.data || $json.items || []).slice(0, 8) }}",
+              "type": "array"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "1503739c-8784-4f60-b63b-71cc79f6d525",
+      "name": "03j - Enriquecer com Histórico",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2320,
+        8384
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "key": "=conv_state:{{ $('01 - Webhook WhatsApp3').item.json.body.data.key.remoteJid }}",
+        "options": {}
+      },
+      "id": "683a5d94-65ce-4dff-b09b-3a90bb458eac",
+      "name": "03k - GET Estado Conversa",
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        2368,
+        9136
+      ],
+      "credentials": {},
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "state-menu",
+                    "leftValue": "={{ $('03k - GET Estado Conversa').item.json.value }}",
+                    "rightValue": "aguardando_menu",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "aguardando_menu"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "state-selecao",
+                    "leftValue": "={{ $('03k - GET Estado Conversa').item.json.value }}",
+                    "rightValue": "aguardando_selecao_protocolo",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "aguardando_selecao"
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra"
+        }
+      },
+      "id": "675affa9-74cc-489b-a2e4-d622285d48ef",
+      "name": "03l - Router por Estado",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        2608,
+        9136
+      ]
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "escolha-consultar",
+                    "leftValue": "={{ ($('03j - Enriquecer com Histórico').item.json.texto_cidadao || '').toLowerCase().trim() }}",
+                    "rightValue": "^(2|dois|2️⃣|consultar|status|protocolo|acompanhar|ver chamado|ver status)",
+                    "operator": {
+                      "type": "string",
+                      "operation": "regex"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "consultar"
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra"
+        }
+      },
+      "id": "a86de590-f44b-40e4-bee7-497072ccf37b",
+      "name": "03m - Identificar Escolha do Menu",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        2912,
+        9120
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "qtd-proto-check",
+              "leftValue": "={{ ($('03j - Enriquecer com Histórico').item.json.lista_protocolos || []).length }}",
+              "rightValue": 2,
+              "operator": {
+                "type": "number",
+                "operation": "lt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "4a7b7071-5a7e-446a-be52-d9330c74116e",
+      "name": "03n_consultar - Qtd Protocolos?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        3232,
+        8800
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "pc1-proto",
+              "name": "protocolo_consulta",
+              "value": "={{ $('03j - Enriquecer com Histórico').item.json.ultimo_protocolo }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "57aeb6ed-515d-419b-99d8-19947d6b795f",
+      "name": "03pc1 - Preparar Consulta Única",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        3440,
+        8688
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const j = $('03j - Enriquecer com Histórico').item.json;\nconst lista = j.lista_protocolos || [];\nconst nome = $('01 - Webhook WhatsApp3').item.json.body.data.pushName || 'Cidadão';\n\nif (lista.length === 0) {\n  return [{ json: {\n    message: `Olá, ${nome}! Não encontrei chamados anteriores para consultar. Se quiser abrir um novo, descreva o problema.`,\n    lista_protocolos: []\n  }}];\n}\n\nlet msg = `Olá, ${nome}! 📋 Você tem *${lista.length}* chamado(s):\\n\\n`;\nlista.forEach((item, i) => {\n  const status = item.status || item.situacao || 'Em andamento';\n  const cat = item.categoria || item.tipo || '';\n  msg += `*${i + 1}.* ${item.protocolo}${cat ? ' — ' + cat : ''} _(${status})_\\n`;\n});\nmsg += `\\nDigite o *número* do chamado que deseja consultar.`;\n\nreturn [{ json: { message: msg, lista_protocolos: lista } }];"
+      },
+      "id": "3a4f7069-05ec-4c1f-b0a6-ef46da184014",
+      "name": "03o - Montar Lista Protocolos",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3456,
+        8864
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "set",
+        "key": "=conv_protos:{{ $('01 - Webhook WhatsApp3').item.json.body.data.key.remoteJid }}",
+        "value": "={{ JSON.stringify($json.lista_protocolos) }}",
+        "expire": true,
+        "ttl": 3600
+      },
+      "id": "d638c4cb-9da8-49c0-9d68-0a9962f8293c",
+      "name": "03o2 - SET Lista Redis",
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        3664,
+        8864
+      ],
+      "credentials": {}
+    },
+    {
+      "parameters": {
+        "operation": "set",
+        "key": "=conv_state:{{ $('01 - Webhook WhatsApp3').item.json.body.data.key.remoteJid }}",
+        "value": "aguardando_selecao_protocolo",
+        "expire": true,
+        "ttl": 3600
+      },
+      "id": "cfa7ed38-be43-4523-9161-3500f9f15c14",
+      "name": "03o3 - SET Estado aguardando_selecao",
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        3856,
+        8848
+      ],
+      "credentials": {}
+    },
+    {
+      "parameters": {
+        "resource": "messages-api",
+        "instanceName": "teste1",
+        "remoteJid": "={{ ($('01 - Webhook WhatsApp3').item.json.body.data.key.remoteJid || '').split('@')[0] }}",
+        "messageText": "={{ $('03o - Montar Lista Protocolos').item.json.message }}",
+        "options_message": {
+          "delay": 1200
+        }
+      },
+      "id": "33c67dc0-2aec-4d05-ab25-f9e1d6be4e1c",
+      "name": "03q2 - WhatsApp: Lista Protocolos",
+      "type": "n8n-nodes-evolution-api.evolutionApi",
+      "typeVersion": 1,
+      "position": [
+        4048,
+        8848
+      ],
+      "credentials": {}
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "key": "=conv_protos:{{ $('01 - Webhook WhatsApp3').item.json.body.data.key.remoteJid }}",
+        "options": {}
+      },
+      "id": "4714439f-537b-4f24-bf2c-68bfcd5e46a0",
+      "name": "03r_get - GET Lista Protocolos",
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        2912,
+        9440
+      ],
+      "credentials": {},
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "const listaJson = $json.value;\nlet lista = [];\ntry {\n  lista = listaJson ? JSON.parse(listaJson) : [];\n} catch(e) {\n  lista = [];\n}\n\nconst texto = ($('03j - Enriquecer com Histórico').item.json.texto_cidadao || '').trim();\n\n// Código ZEL- direto\nconst zelMatch = texto.match(/ZEL-\\d{8}-[A-Z0-9]+/i);\nif (zelMatch) {\n  return [{ json: { protocolo_consulta: zelMatch[0].toUpperCase() } }];\n}\n\n// Número da lista (1, 2, 3...)\nconst numMatch = texto.match(/\\b([1-9]\\d?)\\b/);\nif (numMatch && lista.length > 0) {\n  const idx = parseInt(numMatch[1]) - 1;\n  if (idx >= 0 && idx < lista.length && lista[idx]?.protocolo) {\n    return [{ json: { protocolo_consulta: lista[idx].protocolo } }];\n  }\n}\n\n// Fallback: primeiro da lista\nif (lista.length > 0 && lista[0]?.protocolo) {\n  return [{ json: { protocolo_consulta: lista[0].protocolo } }];\n}\n\nconst ultimoProtocolo = $('03j - Enriquecer com Histórico').item.json.ultimo_protocolo;\nreturn [{ json: { protocolo_consulta: ultimoProtocolo || null } }];"
+      },
+      "id": "b2a2c457-c0fb-49b6-9ed0-591c3007d2bc",
+      "name": "03r - Resolver Protocolo Selecionado",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3216,
+        9440
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "set",
+        "key": "=conv_state:{{ $('01 - Webhook WhatsApp3').item.json.body.data.key.remoteJid }}",
+        "value": "idle",
+        "expire": true,
+        "ttl": 86400
+      },
+      "id": "cc3472fa-7a62-400a-9a22-b31bf4436d7b",
+      "name": "03n_nova - SET idle (nova denuncia)",
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        3168,
+        9136
+      ],
+      "credentials": {}
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "p-f1",
+              "name": "texto_cidadao",
+              "value": "={{ $('03j - Enriquecer com Histórico').item.json.texto_cidadao }}",
+              "type": "string"
+            },
+            {
+              "id": "p-f2",
+              "name": "mediaUrl",
+              "value": "={{ $('03j - Enriquecer com Histórico').item.json.mediaUrl }}",
+              "type": "string"
+            },
+            {
+              "id": "p-f3",
+              "name": "lat",
+              "value": "={{ $('03j - Enriquecer com Histórico').item.json.lat }}",
+              "type": "string"
+            },
+            {
+              "id": "p-f4",
+              "name": "lng",
+              "value": "={{ $('03j - Enriquecer com Histórico').item.json.lng }}",
+              "type": "string"
+            },
+            {
+              "id": "p-f5",
+              "name": "tem_historico",
+              "value": "={{ $('03j - Enriquecer com Histórico').item.json.tem_historico }}",
+              "type": "boolean"
+            },
+            {
+              "id": "p-f6",
+              "name": "total_chamados",
+              "value": "={{ $('03j - Enriquecer com Histórico').item.json.total_chamados }}",
+              "type": "number"
+            },
+            {
+              "id": "p-f7",
+              "name": "ultimo_protocolo",
+              "value": "={{ $('03j - Enriquecer com Histórico').item.json.ultimo_protocolo }}",
+              "type": "string"
+            },
+            {
+              "id": "p-f8",
+              "name": "protocolo",
+              "value": "={{ $('03j - Enriquecer com Histórico').item.json.protocolo }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "d7bd5038-09e1-467e-b214-79a03569275f",
+      "name": "03p - Preparar Input IA",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        3456,
+        9200
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "set",
+        "key": "=conv_state:{{ $('01 - Webhook WhatsApp3').item.json.body.data.key.remoteJid }}",
+        "value": "idle",
+        "expire": true,
+        "ttl": 86400
+      },
+      "id": "5aaf4ef8-6a21-48df-bbee-745efaa1c631",
+      "name": "03s1 - SET idle pós Denúncia",
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        5696,
+        9568
+      ],
+      "credentials": {}
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "e-retornante-check",
+              "leftValue": "={{ $('05 - Parse JSON da IA3').item.json.reason }}",
+              "rightValue": "aguardando_opcao_retornante",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "7293c202-7f91-4e3d-a382-c23f34d3a350",
+      "name": "03t - É Retornante?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        5024,
+        9104
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "set",
+        "key": "=conv_state:{{ $('01 - Webhook WhatsApp3').item.json.body.data.key.remoteJid }}",
+        "value": "aguardando_menu",
+        "expire": true,
+        "ttl": 3600
+      },
+      "id": "592fc271-bbcd-4218-81e0-1ca2ad172814",
+      "name": "03t_state - SET aguardando_menu",
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        5280,
+        9104
+      ],
+      "credentials": {}
+    },
+    {
+      "parameters": {
+        "operation": "set",
+        "key": "=conv_protos:{{ $('01 - Webhook WhatsApp3').item.json.body.data.key.remoteJid }}",
+        "value": "={{ JSON.stringify($('03j - Enriquecer com Histórico').item.json.lista_protocolos || []) }}",
+        "expire": true,
+        "ttl": 3600
+      },
+      "id": "4427095c-aa3e-4465-a935-a92651dc6c62",
+      "name": "03t_protos - SET Lista Protocolos Redis",
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        5536,
+        9104
+      ],
+      "credentials": {}
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "proto-format-check",
+              "leftValue": "={{ $json.protocolo_consulta || '' }}",
+              "rightValue": "^ZEL-\\d{8}-[A-Z0-9]{3,}$",
+              "operator": {
+                "type": "string",
+                "operation": "regex"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "7f6d93f8-1541-4c01-98bd-a6198d0e7a9d",
+      "name": "03v - Validar Formato Protocolo",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        4288,
+        8608
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "messages-api",
+        "instanceName": "teste1",
+        "remoteJid": "={{ ($('01 - Webhook WhatsApp3').item.json.body.data.key.remoteJid || '').split('@')[0] }}",
+        "messageText": "=⚠️ *Protocolo inválido ou não informado.*\n\nPara consultar, informe o código completo no formato:\n*ZEL-AAAAMMDD-XXXX*\n\n📋 Exemplo: _ZEL-20260327-0XRG_\n\nVocê encontra o código na mensagem de confirmação do seu chamado. Tente novamente! 😊",
+        "options_message": {
+          "delay": 1200
+        }
+      },
+      "id": "a99813ae-06c0-4397-9786-0059bbc42d43",
+      "name": "03w - WhatsApp: Protocolo Inválido",
+      "type": "n8n-nodes-evolution-api.evolutionApi",
+      "typeVersion": 1,
+      "position": [
+        4512,
+        8784
+      ],
+      "credentials": {}
+    },
+    {
+      "parameters": {
+        "jsCode": "const data = $input.first().json;\n\nif (!data || !data.ocorrencia) {\n/**\n   const n05Executed = $('05 - Parse JSON da IA3').isExecuted;\n  const protocolo = (n05Executed ? ($('05 - Parse JSON da IA3').item.json.protocolo_consulta || null) : null)\n    || $('03j - Enriquecer com Histórico').item.json.ultimo_protocolo\n    || 'Não encontrado';\n\n */\n  return [{\n    json: {\n      ocorrencia: {\n        protocolo,\n        status: 'NAO_ENCONTRADO',\n        categoria: '-',\n        ultimo_log: null,\n        total_atualizacoes: 0,\n        updated_at: null\n      }\n    }\n  }];\n}\n\nreturn [{ json: data }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4752,
+        8512
+      ],
+      "id": "70eafc69-52e0-42d0-b016-4a6b71bdf5f6",
+      "name": "13 - Formatar Dados Consulta"
+    },
+    {
+      "parameters": {
+        "operation": "set",
+        "key": "=conv_state:{{ $('01 - Webhook WhatsApp3').item.json.body.data.key.remoteJid }}",
+        "value": "idle",
+        "expire": true,
+        "ttl": 86400
+      },
+      "id": "23bcba3c-418d-4fa5-987e-08e4e829417f",
+      "name": "03s2 - SET idle pós Consulta",
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        5504,
+        8512
+      ],
+      "credentials": {}
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "zeladoria-whatsapp-api",
+        "options": {
+          "responseData": ""
+        }
+      },
+      "id": "93a08a9d-38ae-445c-809b-ac2eeb71ecb7",
+      "name": "01 - Webhook WhatsApp3",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -560,
+        8384
+      ],
+      "webhookId": "zeladoria-wh-001"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "body-01",
+              "name": "body",
+              "value": "={{ $('01 - Webhook WhatsApp3').item.json.body }}",
+              "type": "object"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "c5637418-079b-41d3-bd78-a41fb92c2287",
+      "name": "02 - Extract & Normalize Payload3",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -192,
+        8384
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "proto-gen",
+              "name": "protocolo",
+              "value": "={{ 'ZEL-' + new Date().toISOString().slice(0,10).replace(/-/g,'') + '-' + Math.random().toString(36).substring(2,6).toUpperCase() }}",
+              "type": "string"
+            },
+            {
+              "id": "body-pass",
+              "name": "body",
+              "value": "={{ $json.body }}",
+              "type": "object"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "bd670cc8-58af-4587-82c0-366d24d12825",
+      "name": "02b - Gerar Protocolo3",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        96,
+        8384
+      ]
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "bc66e9d1-c75d-49b7-a243-db7c402ee0cb",
+                    "leftValue": "={{ $json.body.data.messageType }}",
+                    "rightValue": "audio",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "audio"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "d38cf8d0-d462-4948-bd4b-58d95098c657",
+                    "leftValue": "={{ $json.body.data.messageType }}",
+                    "rightValue": "conversation",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "text"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "5a93abac-551d-4dfe-94ef-c3e87a7c80ae",
+                    "leftValue": "={{ $json.body.data.messageType }}",
+                    "rightValue": "image",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "foto"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "ext-text-check",
+                    "leftValue": "={{ $json.body.data.messageType }}",
+                    "rightValue": "extendedTextMessage",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "text_extended"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        448,
+        8368
+      ],
+      "id": "c13c7c12-1366-4150-9c90-12419d00c2b6",
+      "name": "Switch3"
+    },
+    {
+      "parameters": {
+        "resource": "chat-api",
+        "operation": "get-media-base64",
+        "instanceName": "teste1",
+        "messageId": "={{ $json.body.data.key.id }}"
+      },
+      "type": "n8n-nodes-evolution-api.evolutionApi",
+      "typeVersion": 1,
+      "position": [
+        768,
+        8224
+      ],
+      "id": "39ef7d81-b137-4653-a437-9f02df5f6796",
+      "name": "Obter m dia em base2",
+      "credentials": {}
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://n8n-srcleads-ffmpeg-api.dtna1d.easypanel.host/save-audio-base64",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"folderPath\": \"zelad/{{ $('02b - Gerar Protocolo3').item.json.protocolo }}/audio/\",\n  \"audios\": [{\n    \"data\": \"data:audio/mpeg;base64,{{ $json.data.base64 }}\",\n    \"filename\": \"audio-{{ $('02b - Gerar Protocolo3').item.json.protocolo }}.mp3\"\n  }]\n}",
+        "options": {
+          "timeout": 10000
+        }
+      },
+      "id": "f4a1f78d-9ee4-40c8-b48d-8a403bb6dd40",
+      "name": "03c - Salvar Áudio API3",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1344,
+        8224
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://n8n-srcleads-ffmpeg-api.dtna1d.easypanel.host/transcribe",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"url\": \"https://n8n-srcleads-ffmpeg-api.dtna1d.easypanel.host{{ $json.folderPath }}/{{ $json.files[0] }}\",\n  \"response_format\": \"srt\",\n  \"correctWithDeepSeek\": true,\n  \"maxCharsPerCue\": 40\n}",
+        "options": {
+          "timeout": 30000
+        }
+      },
+      "id": "fb98bf1b-11ad-43b0-994c-246431e1d8d0",
+      "name": "03d - Transcrever Áudio (SRT)3",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1568,
+        8224
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "let srtContent = '';\nconst resp = $input.first().json;\n\nif (typeof resp === 'string') {\n  srtContent = resp;\n} else if (resp.srt) {\n  srtContent = resp.srt;\n} else if (resp.text) {\n  srtContent = resp.text;\n} else if (resp.transcription) {\n  srtContent = resp.transcription;\n} else {\n  srtContent = JSON.stringify(resp);\n}\n\nconst plainText = srtContent\n  .replace(/^\\d+\\s*$/gm, '')\n  .replace(/\\d{2}:\\d{2}:\\d{2}[,\\.]\\d{3}\\s*-->\\s*\\d{2}:\\d{2}:\\d{2}[,\\.]\\d{3}/gm, '')\n  .replace(/\\r?\\n/g, ' ')\n  .replace(/\\s+/g, ' ')\n  .trim();\n\nreturn [{ json: { srtRaw: srtContent, srtText: plainText } }];"
+      },
+      "id": "03233bab-03d0-43a4-91ae-3f76a99c1431",
+      "name": "03e - Extrair Texto do SRT3",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1792,
+        8224
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const original = $('02b - Gerar Protocolo3').item.json.body || {};\nconst protocolo = $('02b - Gerar Protocolo3').item.json.protocolo;\n\nreturn [{\n  json: {\n    tipo: 'audio',\n    texto_cidadao: $json.srtText || '',\n    transcricao_srt: $json.srtRaw || '',\n    from: original.from || '',\n    name: original.name || original.pushName || '',\n    lat: original.lat || null,\n    lng: original.lng || null,\n    mediaUrl: null,\n    protocolo\n  }\n}];"
+      },
+      "id": "d230eaff-8c51-458d-991e-582080b55a3e",
+      "name": "03g - Normalizar Dados Áudio3",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1984,
+        8224
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "64f83a44-43d0-4f45-8dc3-5d0aa0576167",
+              "name": "protocolo",
+              "value": "={{ $json.protocolo }}",
+              "type": "string"
+            },
+            {
+              "id": "de7284e0-ef83-4065-8daf-1e32bc3b5b51",
+              "name": "original",
+              "value": "={{ $json.body }}",
+              "type": "object"
+            },
+            {
+              "id": "38da5e8e-c843-4b59-ae4d-8530bedcac7f",
+              "name": "normalize",
+              "value": "={{ $('02 - Extract & Normalize Payload3').item.json.body.data }}",
+              "type": "object"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1072,
+        8384
+      ],
+      "id": "27f869d7-c3b0-499e-8445-a0209a839141",
+      "name": "Edit Fields5"
+    },
+    {
+      "parameters": {
+        "resource": "chat-api",
+        "operation": "get-media-base64",
+        "instanceName": "teste1",
+        "messageId": "={{ $json.body.data.key.id }}"
+      },
+      "type": "n8n-nodes-evolution-api.evolutionApi",
+      "typeVersion": 1,
+      "position": [
+        768,
+        8560
+      ],
+      "id": "4f387af0-6b6c-41c3-8210-3e1e669ccb75",
+      "name": "Obter m dia em base67",
+      "credentials": {}
+    },
+    {
+      "parameters": {
+        "jsCode": "const advertiserCode = $('02b - Gerar Protocolo3').first().json.protocolo;\nconst base64 = $input.first().json.data.base64;\nconst frame_name = $input.first().json.data.fileName;\n\nreturn {\n  json: { ...$json, fileName: `${frame_name}` },\n  binary: {\n    data: {\n      data: base64,\n      mimeType: 'image/jpeg',\n      fileName: `${frame_name}`\n    }\n  },\n  advertiserCode: advertiserCode\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        992,
+        8560
+      ],
+      "id": "f32362ad-d198-4d65-8da0-b5f9608c37ec",
+      "name": "Code in JavaScript13"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "64f83a44-43d0-4f45-8dc3-5d0aa0576168",
+              "name": "protocolo",
+              "value": "={{ $('02b - Gerar Protocolo3').item.json.protocolo }}",
+              "type": "string"
+            },
+            {
+              "id": "de7284e0-ef83-4065-8daf-1e32bc3b5b52",
+              "name": "original",
+              "value": "={{ $('02b - Gerar Protocolo3').item.json.body }}",
+              "type": "object"
+            },
+            {
+              "id": "38da5e8e-c843-4b59-ae4d-8530bedcac70",
+              "name": "normalize",
+              "value": "={{ $('02 - Extract & Normalize Payload3').item.json.body.data }}",
+              "type": "object"
+            },
+            {
+              "id": "media-url-f1",
+              "name": "mediaUrl",
+              "value": "={{ $json.success && $json.files && $json.files[0] ? 'https://n8n-srcleads-ffmpeg-api.dtna1d.easypanel.host' + $json.folderPath + '/' + $json.files[0] : null }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1520,
+        8560
+      ],
+      "id": "c61a83df-55f2-4a10-a606-d941631e9e0e",
+      "name": "Edit Fields6"
+    },
+    {
+      "parameters": {
+        "jsCode": "const original = $input.first().json.original || {};\nconst protocolo = $input.first().json.protocolo;\nconst Normalize = $input.first().json.normalize || {};\n\nconst mediaUrl = $input.first().json.mediaUrl || original.mediaUrl || null;\n\nreturn [{\n  json: {\n    tipo: original.type || original.messageType || 'text',\n    texto_cidadao: original.body\n      || original.caption\n      || original.text\n      || Normalize.message?.conversation\n      || Normalize.message?.extendedTextMessage?.text\n      || '',\n    transcricao_srt: null,\n    from: original.from || '',\n    name: original.name || Normalize.pushName || '',\n    lat: original.lat || null,\n    lng: original.lng || null,\n    mediaUrl,\n    protocolo\n  }\n}];"
+      },
+      "id": "99cc374a-5698-4675-9e04-2d23065b9849",
+      "name": "03h - Normalizar Dados Mídia/Texto3",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1792,
+        8400
+      ]
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4o-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        3760,
+        9280
+      ],
+      "id": "d2946f91-09d7-452e-a94f-6c75ed547129",
+      "name": "OpenAI Chat Model3",
+      "credentials": {}
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('01 - Webhook WhatsApp3').item.json.body.data.key.remoteJid }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryRedisChat",
+      "typeVersion": 1.5,
+      "position": [
+        3856,
+        9552
+      ],
+      "id": "d67fa9ba-f680-4481-b88b-43e3218caf53",
+      "name": "Redis Chat Memory3",
+      "credentials": {}
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=MENSAGEM ATUAL DO CIDADÃO:\n- Texto/Transcrição: {{ $json.texto_cidadao || 'Nenhum texto' }}\n- URL de Mídia Anexada nesta mensagem: {{ $json.mediaUrl || 'Nenhuma' }}\n- GPS do aparelho: Lat {{ $json.lat || 'Nulo' }}, Lng {{ $json.lng || 'Nulo' }}\n\nCONTEXTO DO CIDADÃO (consultado automaticamente pelo sistema):\n- Já tem chamados anteriores: {{ $json.tem_historico }}\n- Total de chamados já abertos: {{ $json.total_chamados }}\n- Último protocolo registrado: {{ $json.ultimo_protocolo || 'Nenhum' }}\n\nINSTRUÇÃO CRÍTICA: O usuário responde aos poucos. Analise o Histórico da Conversa e ACUMULE os dados. O JSON que você retornar agora deve ser a SOMA do que estava no histórico com o que chegou agora. Se a URL de Mídia acima não for 'Nenhuma', acrescente-a no array \"midias_acumuladas\".",
+        "options": {
+          "systemMessage": "Você é o atendente virtual do CANAL DE ZELADORIA URBANA da Prefeitura de Peruíbe. Sua função é processar denúncias e agir como o \"Cérebro\" do estado da conversa.\n\n🚨 REGRA DE OURO (FIM DA AMNÉSIA):\nO usuário não manda tudo de uma vez. Manda foto, depois bairro, depois a descrição.\nSua maior responsabilidade é LER O HISTÓRICO e SOMAR as informações. Se você extraiu o Endereço ou a Descrição em mensagens passadas, MANTENHA ELES no seu JSON final. O array \"midias_acumuladas\" deve guardar os links de TODAS as fotos enviadas pelo usuário até o momento.\n\n## REGRAS DE ATENDIMENTO:\n\n1. CONTEÚDO IMPRÓPRIO (NSFW)\nSe a imagem ou texto contiver nudez, violência, etc:\nRetorne valid: false, reason: \"conteudo_improprio\", resposta_cidadao: \"⚠️ Mensagem bloqueada. Canal exclusivo para zeladoria urbana.\"\n\n2. SAUDAÇÕES E PRIMEIRA INTERAÇÃO\nSe a mensagem for apenas uma saudação (Oi, Olá, Bom dia, etc.) ou não contiver informações de problema, VERIFIQUE OBRIGATORIAMENTE o campo \"tem_historico\" do prompt:\n\n   a) Se tem_historico = TRUE (cidadão RETORNANTE):\n      NÃO dê boas-vindas genéricas. Pergunte o que ele quer fazer:\n      resposta_cidadao: \"Olá! 👋 Que bom ter você aqui novamente!\\n\\nO que você gostaria de fazer?\\n\\n1️⃣ Abrir um *novo chamado*\\n2️⃣ Consultar status de um protocolo (ex: ZEL-20260327-XXXX)\"\n      Retorne: valid: false, reason: \"aguardando_opcao_retornante\"\n\n   b) Se tem_historico = FALSE (cidadão NOVO):\n      Dê boas-vindas e peça a denúncia.\n      resposta_cidadao: \"Olá! 👋 Bem-vindo(a) à Zeladoria de Peruíbe. O que gostaria de relatar? Envie uma foto, áudio ou descreva o problema com o endereço.\"\n      Retorne: valid: false, reason: \"saudacao\"\n\n3. RESPOSTA AO MENU DE RETORNANTE\n   - Se o usuário responder \"1\", \"novo\", \"nova denúncia\" ou similar: trate como nova denúncia, valide normalmente.\n   - Se o usuário responder \"2\", \"consultar\", \"status\", \"protocolo\" ou similar: Retorne valid: false, reason: \"consulta_protocolo\", protocolo_consulta: null\n\n4. CHAMADO COMPLETO (O QUE É EXIGIDO?)\nO chamado SÓ PODE SER FINALIZADO (needs_more_info: false) se tivermos OBRIGATORIAMENTE:\n- Endereço (Rua/Avenida E Bairro)\n- Descrição clara do problema (O que aconteceu)\n\n5. A REGRA DA FOTO OPCIONAL (MUITO IMPORTANTE)\nSe o usuário JÁ INFORMOU Endereço e Descrição, MAS o array \"midias_acumuladas\" estiver VAZIO:\n- Se ele já escreveu \"Finalizar\", \"Não tenho foto\" ou similar: ignore a foto, marque needs_more_info: false e finalize.\n- Se ele NÃO encerrou: marque needs_more_info: true, coloque missing_fields: [\"foto_opcional\"] e diga: \"Endereço e relato anotados! 💡 Dica: Enviar uma FOTO agiliza muito a resolução. Se quiser, envie agora. Se não tiver, digite 'FINALIZAR'.\"\n\n6. INFORMAÇÕES FALTANTES OBRIGATÓRIAS\nSe faltar rua, bairro ou descrição, marque needs_more_info: true e escreva amigavelmente em \"resposta_cidadao\" o que você precisa.\n\n7. A Cidade é sempre Peruíbe.\n\n8. Manter as respostas sempre curtas ao cidadão.\n\n9. CONSULTA DE PROTOCOLO\nSe o usuário mencionar um número de protocolo (ex: \"ZEL-...\") ou pedir para consultar/acompanhar um chamado:\nExtrai o número do protocolo se mencionado. Retorne:\nvalid: false, reason: \"consulta_protocolo\", protocolo_consulta: \"<número extraído ou null>\", resposta_cidadao: \"Consultando seu protocolo, aguarde um instante...\"\n\n---\n## FORMATO DE SAÍDA (RETORNE APENAS ESTE JSON PURO, SEM MARKDOWN):\n{\n  \"valid\": true,\n  \"needs_more_info\": true,\n  \"missing_fields\": [\"rua\", \"bairro\", \"descricao\", \"foto_opcional\"],\n  \"category\": \"limpeza\",\n  \"severity\": \"medium\",\n  \"ai_summary\": \"Descrição acumulada do histórico e da mensagem atual\",\n  \"address_guessed\": \"Av. São Domingos, Arpoador\",\n  \"lat\": null,\n  \"lng\": null,\n  \"tags\": [\"mato\"],\n  \"midias_acumuladas\": [\"url_da_foto_1\"],\n  \"resposta_cidadao\": \"A sua resposta humanizada para o usuário aqui.\",\n  \"reason\": null,\n  \"protocolo_consulta\": null\n}"
+        }
+      },
+      "id": "dbd0ad18-001a-4cb4-8266-961177461956",
+      "name": "04 - IA Curadora (Vision + Extração)3",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        3760,
+        9136
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const rawOutput = $input.first().json.output || $input.first().json.text || '';\n\nlet parsed;\ntry {\n  const cleaned = rawOutput.replace(/\\u0060\\u0060\\u0060json\\n?/g, '').replace(/\\u0060\\u0060\\u0060\\n?/g, '').trim();\n  parsed = JSON.parse(cleaned);\n} catch (e) {\n  parsed = { valid: false, reason: 'parse_error', resposta_cidadao: 'Desculpe, houve um erro interno. Tente novamente.' };\n}\n\nreturn [{ json: { ...parsed, _rawAiOutput: rawOutput } }];"
+      },
+      "id": "0bef209e-d24d-4347-bce1-16e92fbba0ae",
+      "name": "05 - Parse JSON da IA3",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4032,
+        9136
+      ]
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "cond-invalid",
+                    "leftValue": "={{ $json.valid }}",
+                    "rightValue": false,
+                    "operator": {
+                      "type": "boolean",
+                      "operation": "false",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Inválido ❌"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "cond-valid",
+                    "leftValue": "={{ $json.valid }}",
+                    "rightValue": true,
+                    "operator": {
+                      "type": "boolean",
+                      "operation": "true",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Válido ✅"
+            }
+          ]
+        },
+        "options": {
+          "ignoreCase": false
+        }
+      },
+      "id": "c5f7dd3a-e87b-42c0-a635-c2d5ef5d276c",
+      "name": "06 - Guardrail: Válido?3",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        4208,
+        9136
+      ]
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "cond-needs",
+                    "leftValue": "={{ $json.needs_more_info }}",
+                    "rightValue": true,
+                    "operator": {
+                      "type": "boolean",
+                      "operation": "true",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Pede Mais Info ⏳"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "cond-complete",
+                    "leftValue": "={{ $json.needs_more_info }}",
+                    "rightValue": false,
+                    "operator": {
+                      "type": "boolean",
+                      "operation": "false",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Completo ✅"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "91aa9a9f-cd77-4ab2-b94c-493359ac56bf",
+      "name": "06b - Tem Todas as Infos?3",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        4544,
+        9456
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const ai = $('05 - Parse JSON da IA3').item.json;\n\nif (ai.resposta_cidadao && ai.resposta_cidadao.trim() !== '') {\n  return [{ json: { status: 'pending_info', message: ai.resposta_cidadao, ai_summary: ai.ai_summary } }];\n}\n\nconst missing = ai.missing_fields || [];\nconst fieldLabels = {\n  bairro: '📍 *Bairro* onde está o problema',\n  rua: '🏠 *Rua ou Avenida* do problema',\n  descricao: '📝 *Descrição do problema* (O que aconteceu?)'\n};\nconst camposReais = missing.filter(f => fieldLabels[f]);\nlet missingList = camposReais.length > 0\n  ? camposReais.map(f => fieldLabels[f]).join('\\n')\n  : '📍 *Endereço* (Rua e Bairro)\\n📝 *Descrição do problema*';\n\nlet msg = `⚠️ *Recebemos seu relato!*\\n\\nMas precisamos de algumas informações:\\n\\n${missingList}\\n\\nResponda com essas informações! 😊`;\n\nreturn [{ json: { status: 'pending_info', message: msg, ai_summary: ai.ai_summary } }];"
+      },
+      "id": "7d684c01-2568-43b8-8756-135a56219381",
+      "name": "09b - Build Mensagem Pede Info3",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4896,
+        9376
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "messages-api",
+        "instanceName": "teste1",
+        "remoteJid": "={{ ($('01 - Webhook WhatsApp3').item.json.body.data.key.remoteJid || '').split('@')[0] }}",
+        "messageText": "={{ $json.message }}",
+        "options_message": {
+          "delay": 1800
+        }
+      },
+      "type": "n8n-nodes-evolution-api.evolutionApi",
+      "typeVersion": 1,
+      "position": [
+        5152,
+        9376
+      ],
+      "id": "ce7552aa-2677-453b-a6e6-f166b8a85b84",
+      "name": "Evolution API11",
+      "credentials": {}
+    },
+    {
+      "parameters": {
+        "jsCode": "const ai = $json;\nconst protoOriginal = $('02b - Gerar Protocolo3').item.json;\n\nconst protocoloFinal = protoOriginal.protocolo || ('ZEL-' + new Date().toISOString().slice(0,10).replace(/-/g,'') + '-' + Math.random().toString(36).substring(2,6).toUpperCase());\n\nconst severityMap = { critical: 'CRITICA', high: 'ALTA', medium: 'MEDIA', low: 'BAIXA' };\nconst categoriaMap = {\n  vias: 'BURACO', iluminacao: 'ILUMINACAO', limpeza: 'LIXO',\n  sinalizacao: 'OUTRO', arvores: 'ARVORE', drenagem: 'OUTRO',\n  predios: 'OUTRO', outros: 'OUTRO'\n};\n\nconst addressParts = (ai.address_guessed || '').split(',').map(s => s.trim());\nconst rua    = (addressParts[0] && addressParts[0] !== 'null') ? addressParts[0] : '';\nconst bairro = (addressParts[1] && addressParts[1] !== 'null') ? addressParts[1] : 'Nao informado';\nconst whatsapp = $('02b - Gerar Protocolo3').first().json.body.data.key.remoteJid.split('@')[0];\n\nconst midias = (ai.midias_acumuladas || []).map(url => ({ url, tipo: 'FOTO' }));\n\nreturn [{\n  json: {\n    protocolo: protocoloFinal,\n    categoria: categoriaMap[ai.category] || 'OUTRO',\n    descricao: ai.ai_summary || '',\n    criticidade: severityMap[ai.severity] || 'MEDIA',\n    rua, bairro,\n    cidade: 'peruibe',\n    latitude:  (ai.lat && ai.lat !== 'null')  ? Number(ai.lat) : null,\n    longitude: (ai.lng && ai.lng !== 'null') ? Number(ai.lng) : null,\n    cidadao: {\n      nome:     $('01 - Webhook WhatsApp3').first().json.body.data.pushName || 'Cidadao WhatsApp',\n      telefone: whatsapp || '',\n      anonimo:  false\n    },\n    midias\n  }\n}];"
+      },
+      "id": "5e56a26b-b57c-4042-bbd5-6d00748b3560",
+      "name": "07 - Build API Payload3",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4992,
+        9568
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://n8n-srcleads-zeladoria-api.dtna1d.easypanel.host/ocorrencias",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json) }}",
+        "options": {
+          "timeout": 10000
+        }
+      },
+      "id": "626ba5c7-9ba7-4253-8b47-3d481d6d0460",
+      "name": "08 - POST /ocorrencias (Backend)3",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        5168,
+        9568
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "confirm-msg",
+              "name": "resposta_cidadao",
+              "value": "=✅ *Denúncia registrada com sucesso!*\n\n📋 *Protocolo:* #{{ $('07 - Build API Payload3').item.json.protocolo }}\n\n📍 *Local:* {{ $('07 - Build API Payload3').item.json.rua ? $('07 - Build API Payload3').item.json.rua + ', ' : '' }}{{ $('07 - Build API Payload3').item.json.bairro }}\n\nNosso time foi notificado e trabalhará para resolver em breve. Guarde o protocolo para acompanhamento. 🙏",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "2d4c27d4-8398-4798-b943-f49b3974243e",
+      "name": "Edit Fields7",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        5344,
+        9568
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "messages-api",
+        "instanceName": "teste1",
+        "remoteJid": "={{ ($('01 - Webhook WhatsApp3').item.json.body.data.key.remoteJid || '').split('@')[0] }}",
+        "messageText": "={{ $json.resposta_cidadao }}",
+        "options_message": {
+          "delay": 1800
+        }
+      },
+      "type": "n8n-nodes-evolution-api.evolutionApi",
+      "typeVersion": 1,
+      "position": [
+        5520,
+        9568
+      ],
+      "id": "91f4c0f6-8fd6-4045-8e32-f35b1a1db042",
+      "name": "Evolution API12",
+      "credentials": {}
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "not-consulta-check",
+              "leftValue": "={{ $json.reason }}",
+              "rightValue": "consulta_protocolo",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        4512,
+        9120
+      ],
+      "id": "56805141-08a0-45bf-94a4-caea728ab1a9",
+      "name": "If3"
+    },
+    {
+      "parameters": {
+        "resource": "messages-api",
+        "instanceName": "teste1",
+        "remoteJid": "={{ ($('01 - Webhook WhatsApp3').item.json.body.data.key.remoteJid || '').split('@')[0] }}",
+        "messageText": "={{ $json.resposta_cidadao || '❌ *Mensagem não reconhecida*\\n\\nNão conseguimos identificar um problema de zeladoria urbana.\\n\\n📸 Envie:\\n• Uma *foto* do problema\\n• Um *áudio* descrevendo o problema e o local\\n• Ou um *texto* com descrição e endereço' }}",
+        "options_message": {
+          "delay": 1800
+        }
+      },
+      "type": "n8n-nodes-evolution-api.evolutionApi",
+      "typeVersion": 1,
+      "position": [
+        4784,
+        9104
+      ],
+      "id": "aa088733-162f-4ff6-b816-f77f93709dd2",
+      "name": "Evolution API13",
+      "credentials": {}
+    },
+    {
+      "parameters": {
+        "url": "=https://n8n-srcleads-zeladoria-api.dtna1d.easypanel.host/ocorrencias/status",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "protocolo",
+              "value": "={{ $json.protocolo_consulta }}"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          },
+          "timeout": 8000
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        4512,
+        8512
+      ],
+      "id": "276d3a6a-734c-498f-b358-919bb956e85f",
+      "name": "12 - Consultar Ocorrência API3"
+    },
+    {
+      "parameters": {
+        "model": "deepseek-chat",
+        "prompt": {
+          "messages": [
+            {
+              "role": "assistant",
+              "content": "=Você é uma assistente de resposta. Analise os dados e retorne brevemente como está o andamento do pedido, de forma que tranquilize e mostre seriedade. Não mencione a criticidade. Só fale das atualizações se houver mais de 1.\n\nProtocolo: {{ $json.ocorrencia.protocolo }}\nStatus: {{ $json.ocorrencia.status }}\nCategoria: {{ $json.ocorrencia.categoria }}\nÚltima observação: {{ $json.ocorrencia.ultimo_log?.observacao || 'Sem observações' }}\nÚltima atualização: {{ $json.ocorrencia.ultimo_log?.data || $json.ocorrencia.updated_at }}\nTotal de atualizações: {{ $json.ocorrencia.total_atualizacoes }}\n\n{{ JSON.stringify($json.ocorrencia) }}"
+            }
+          ]
+        },
+        "options": {},
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-deepseek.deepSeek",
+      "typeVersion": 1,
+      "position": [
+        5008,
+        8512
+      ],
+      "id": "f6f98fe2-d0d5-4014-898f-b603ab28cb7c",
+      "name": "Create chat completion3",
+      "credentials": {}
+    },
+    {
+      "parameters": {
+        "resource": "messages-api",
+        "instanceName": "teste1",
+        "remoteJid": "={{ ($('01 - Webhook WhatsApp3').item.json.body.data.key.remoteJid || '').split('@')[0] }}",
+        "messageText": "={{ $json.message.content }}",
+        "options_message": {
+          "delay": 1800
+        }
+      },
+      "type": "n8n-nodes-evolution-api.evolutionApi",
+      "typeVersion": 1,
+      "position": [
+        5264,
+        8512
+      ],
+      "id": "539f3946-f58b-4508-8129-e902a8430297",
+      "name": "Evolution API14",
+      "credentials": {}
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "key": "=conv_sess:={{ $('01 - Webhook WhatsApp3').item.json.body.data.key.remoteJid }}",
+        "options": {}
+      },
+      "id": "zel-04a-get-sess-1min",
+      "name": "04a - GET Sessão Fluxo 1min",
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        3120,
+        5100
+      ],
+      "credentials": {
+        "redis": {
+          "id": "vqQF1gn3TFZPV65T",
+          "name": "Redis account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "model": "deepseek-chat",
+        "prompt": {
+          "messages": [
+            {
+              "role": "assistant",
+              "content": "=Você é o roteador inteligente do WhatsApp da *Zeladoria Urbana da Prefeitura de Peruíbe*.\nAnalise a mensagem do cidadão e o contexto abaixo. Seja empático: muitas vezes a pessoa só agradece, cumprimenta ou faz uma pergunta simples depois que já recebeu o status do chamado ou abriu protocolo.\n\nResponda *APENAS* um JSON válido (sem markdown, sem texto fora do JSON).\n\nSchema:\n{\n  \"tipo_mensagem\": \"<um dos valores abaixo>\",\n  \"confianca\": <número de 0 a 1>,\n  \"protocolo_detectado\": \"<ZEL-AAAAMMDD-XXXX em maiúsculas ou null>\",\n  \"intencao_principal\": \"<atalho legado: consultar_status | nova_ocorrencia | menu_opcao | saudacao | ambiguo | outro>\",\n  \"resposta_humana_curta\": \"<texto completo para enviar no WhatsApp, em pt-BR. Pode ter vários parágrafos; dentro do JSON use \\\\n para quebras de linha. Mesmo tom caloroso do canal: emojis pontuais (⚠️ 😊 💡), *negrito* estilo WhatsApp, listas com ícones (🏠 📍 📝) quando orientar o cidadão. Se não for caso de responder agora (ex.: vai delegar para outro fluxo), use \\\"\\\"\"\n}\n\nValores permitidos para tipo_mensagem:\n- cumprimento (oi, bom dia, e aí)\n- agradecimento_ou_despedida (obrigado, valeu, show, tchau)\n- pergunta_pos_atendimento (perguntas leves depois de já ter sido atendido: \"e agora?\", \"demora muito?\")\n- pergunta_geral_institucional (o que é zeladoria?, vocês arrumam X?)\n- protocolo_explicito (trouxe o código ZEL-...)\n- pedido_consulta_sem_codigo (quero ver status mas sem número)\n- nova_ocorrencia_problema_urbano (buraco, lixo, iluminação, calçada, água, mato, etc.)\n- midia_sem_texto_relevante (só foto/áudio ou legenda vazia/genérica — descrever problema na imagem/som)\n- escolha_menu_numerica (1, 2, opção dois)\n- ambiguo_precisa_contexto\n\nRegras:\n- Se houver regex de protocolo no texto, use protocolo_explicito e preencha protocolo_detectado.\n- Agradecimentos após atendimento: agradecimento_ou_despedida + resposta calorosa (pode ser breve ou com um parágrafo a mais se fizer sentido).\n- Texto só com \\\"obrigado\\\", \\\"valeu\\\", \\\"brigado\\\" (sem código ZEL novo): *sempre* tipo_mensagem agradecimento_ou_despedida — *nunca* consultar_status ou protocolo_explicito.\n- Não invente dados de protocolo; se não houver código, protocolo_detectado = null.\n- Para orientações (o que falta, como proceder), inspire-se no estilo já usado no canal — ex.: \\\"⚠️ *Recebemos seu relato!*\\\", resumo do que entendeu, \\\"Mas precisamos de...\\\" com lista clara e \\\"💡 Dica:\\\" no final. Soe como atendente, não como sistema.\n- O envio da mensagem final com *protocolo após denúncia registrada* fica no fluxo de abertura de chamado (backend); aqui você só prepara texto quando a resposta for direta ao cidadão neste roteador.\n\nContexto (JSON):\n{{ JSON.stringify({\n  texto_cidadao: $('03j - Enriquecer com Histórico').first().json.texto_cidadao,\n  tem_midia: !!( $('03j - Enriquecer com Histórico').first().json.mediaUrl ),\n  mediaUrl: $('03j - Enriquecer com Histórico').first().json.mediaUrl || null,\n  tipo_midia: $('03j - Enriquecer com Histórico').first().json.tipo || null,\n  tem_historico_chamados: $('03j - Enriquecer com Histórico').first().json.tem_historico,\n  total_chamados: $('03j - Enriquecer com Histórico').first().json.total_chamados,\n  estado_conversa_redis: $('03k - GET Estado Conversa').first().json.value,\n  sessao_1min_raw: $('04a - GET Sessão Fluxo 1min').first().json.value\n}) }}"
+            }
+          ]
+        },
+        "options": {},
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-deepseek.deepSeek",
+      "typeVersion": 1,
+      "position": [
+        3340,
+        5100
+      ],
+      "id": "zel-04b-deepseek-classificar",
+      "name": "04b - DeepSeek Roteador Inteligente (inicial)",
+      "credentials": {
+        "deepSeekApi": {
+          "id": "mIOa9vOi0zVuZw6s",
+          "name": "DeepSeek account 3"
+        }
+      },
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const j = $('03j - Enriquecer com Histórico').first().json;\nconst texto = (j.texto_cidadao || '').trim();\nconst estadoRaw = $('03k - GET Estado Conversa').first().json.value;\nconst estado = String(estadoRaw != null && estadoRaw !== '' ? estadoRaw : 'idle')\n  .trim()\n  .toLowerCase();\nconst temZelNoTexto = /ZEL-\\d{8}-[A-Z0-9]+/i.test(texto);\nconst temMidia = !!(j.mediaUrl && String(j.mediaUrl).trim());\nlet sessVal = $('04a - GET Sessão Fluxo 1min').first().json.value;\nlet sess = {};\ntry { sess = sessVal ? JSON.parse(sessVal) : {}; } catch (e) { sess = {}; }\nconst sessOk1min = !!(sess.ts && (Date.now() - Number(sess.ts) < 60000));\n\nconst raw = $input.first().json.message?.content || $input.first().json.output || $input.first().json.text || '';\nlet ai = {};\ntry {\n  const cleaned = raw.replace(/```json\\n?/gi, '').replace(/```/g, '').trim();\n  const s = cleaned.indexOf('{');\n  const e = cleaned.lastIndexOf('}');\n  if (s >= 0 && e > s) ai = JSON.parse(cleaned.slice(s, e + 1));\n} catch (err) {\n  ai = { tipo_mensagem: 'ambiguo_precisa_contexto', confianca: 0, protocolo_detectado: null, intencao_principal: 'ambiguo', resposta_humana_curta: '' };\n}\n\nconst tipo = String(ai.tipo_mensagem || '').toLowerCase();\nconst conf = Number(ai.confianca);\nconst respostaHumana = String(ai.resposta_humana_curta || ai.resposta_curta || '').trim();\nconst intent = String(ai.intencao_principal || 'ambiguo').toLowerCase();\nconst protoAi = String(ai.protocolo_detectado || ai.protocolo || '').trim().toUpperCase();\nconst okProto = /^ZEL-\\d{8}-[A-Z0-9]{3,}$/.test(protoAi);\n\nfunction stripAcc(s) {\n  return String(s || '')\n    .normalize('NFD')\n    .replace(/[\\u0300-\\u036f]/g, '')\n    .toLowerCase();\n}\n\nconst tn = stripAcc(texto);\nconst textoCurtoSemMidia = !temMidia && tn.length > 0 && tn.length <= 120;\n\nfunction pareceAgradecimentoOuFechamento(t) {\n  if (temZelNoTexto) return false;\n  const x = String(t || '').trim();\n  if (/^[12]\\s*$/.test(x)) return false;\n  if (/^(um|dois|opcao|opção)\\b/.test(x)) return false;\n  return (\n    /\\b(obrigad[oa]|muito obrigad[oa]|valeu|vlw|agradeco|brigad[oa]|tmj|thanks|thank you|thx|ty)\\b/.test(x) ||\n    /^(show|iss[oa] mesmo|perfeito)\\b/.test(x) ||\n    /^[\\s🙏👍❤]+\\s*$/u.test(texto.trim())\n  );\n}\n\nconst estadoPermiteRespostaCurtaHumana = ['idle', '', 'null', 'aguardando_menu'].includes(estado);\n\nconst zel = texto.match(/ZEL-\\d{8}-[A-Z0-9]+/i);\nif (zel) {\n  return [{ json: { fluxo: 'consulta_protocolo', protocolo_consulta: zel[0].toUpperCase(), limpar_sess: true } }];\n}\n\nif (estado === 'aguardando_selecao_protocolo') {\n  return [{ json: { fluxo: 'delegar_03l', protocolo_consulta: null } }];\n}\n\nif (sessOk1min && sess.mode === 'consulta_aguardando') {\n  if (textoCurtoSemMidia && pareceAgradecimentoOuFechamento(tn)) {\n    const msg =\n      respostaHumana ||\n      'Por nada! 😊 Quando precisar, é só chamar. Se quiser *consultar outro protocolo* ou *abrir um chamado*, manda mensagem aqui.';\n    return [{ json: { fluxo: 'resposta_natural', mensagem_whatsapp: msg, limpar_sess: true } }];\n  }\n  const z2 = texto.match(/ZEL-\\d{8}-[A-Z0-9]+/i);\n  if (z2) {\n    return [{ json: { fluxo: 'consulta_protocolo', protocolo_consulta: z2[0].toUpperCase(), limpar_sess: true } }];\n  }\n  if (/^\\s*\\d{1,2}\\s*$/.test(texto)) {\n    return [{ json: { fluxo: 'delegar_03l' } }];\n  }\n  const msg =\n    respostaHumana ||\n    'Para consultar, preciso do *protocolo completo* (ex.: ZEL-20260327-XXXX) ou o *número* do item na lista que te enviei. Pode mandar?';\n  return [\n    {\n      json: {\n        fluxo: 'pergunta_contexto',\n        mensagem_whatsapp: msg,\n        redis_sess_payload: JSON.stringify({ mode: 'consulta_aguardando', ts: Date.now(), ultima_pergunta: msg }),\n      },\n    },\n  ];\n}\n\nif (temMidia && (!texto || texto.length < 3)) {\n  return [{ json: { fluxo: 'delegar_03l' } }];\n}\n\nif (estadoPermiteRespostaCurtaHumana && textoCurtoSemMidia && pareceAgradecimentoOuFechamento(tn)) {\n  const msg =\n    respostaHumana ||\n    'Por nada! 😊 Fico feliz em ajudar. Se precisar de novo — *novo relato* ou *consultar protocolo* — é só mandar mensagem aqui.';\n  return [{ json: { fluxo: 'resposta_natural', mensagem_whatsapp: msg, limpar_sess: true } }];\n}\n\n// IA costuma repetir protocolo_detectado do contexto: \"obrigado\" não pode virar nova consulta HTTP\nif (okProto && textoCurtoSemMidia && pareceAgradecimentoOuFechamento(tn) && !temZelNoTexto) {\n  const msg =\n    respostaHumana ||\n    'Por nada! 😊 Fico feliz em ajudar. Qualquer coisa, é só chamar por aqui.';\n  return [{ json: { fluxo: 'resposta_natural', mensagem_whatsapp: msg, limpar_sess: true } }];\n}\n\nconst naturalTipos = [\n  'cumprimento',\n  'agradecimento_ou_despedida',\n  'pergunta_pos_atendimento',\n  'pergunta_geral_institucional',\n];\nconst confOk = !Number.isNaN(conf) ? conf >= 0.45 : true;\nconst estadoIdleLike = ['idle', '', 'null'].includes(estado);\nconst podeConversaNatural =\n  estadoIdleLike || (estado === 'aguardando_menu' && tipo === 'agradecimento_ou_despedida');\n\nif (podeConversaNatural) {\n  if (naturalTipos.includes(tipo) && confOk && respostaHumana) {\n    return [{ json: { fluxo: 'resposta_natural', mensagem_whatsapp: respostaHumana, limpar_sess: true } }];\n  }\n  if (naturalTipos.includes(tipo) && confOk && !respostaHumana) {\n    const fallbacks = {\n      cumprimento: 'Olá! 👋 Sou o canal da Zeladoria de Peruíbe. Posso ajudar com um *novo relato* (buraco, lixo, iluminação etc.) ou *consultar* um protocolo. O que você precisa?',\n      agradecimento_ou_despedida: 'Por nada! Fico feliz em ajudar. Qualquer coisa, é só chamar por aqui. Um ótimo dia! 😊',\n      pergunta_pos_atendimento: 'Seu chamado segue com a equipe da Prefeitura. Se pintar outra dúvida ou um novo problema no bairro, manda mensagem aqui que a gente vê.',\n      pergunta_geral_institucional: 'Aqui é o canal de *Zeladoria Urbana* de Peruíbe: atendemos problemas como buracos, lixo, iluminação pública, calçadas e similares. Quer *abrir um chamado* ou *consultar* um protocolo?',\n    };\n    return [{ json: { fluxo: 'resposta_natural', mensagem_whatsapp: fallbacks[tipo] || fallbacks.pergunta_geral_institucional, limpar_sess: true } }];\n  }\n}\n\nif (estado === 'aguardando_menu') {\n  if (okProto) {\n    return [{ json: { fluxo: 'consulta_protocolo', protocolo_consulta: protoAi, limpar_sess: true } }];\n  }\n  if (tipo === 'nova_ocorrencia_problema_urbano' || intent.includes('nov')) {\n    return [{ json: { fluxo: 'nova_denuncia', limpar_sess: true } }];\n  }\n  if (tipo === 'protocolo_explicito' || tipo === 'pedido_consulta_sem_codigo' || intent.includes('consult')) {\n    return [{ json: { fluxo: 'delegar_03l' } }];\n  }\n  return [{ json: { fluxo: 'delegar_03l' } }];\n}\n\nif (okProto || tipo === 'protocolo_explicito') {\n  return [{ json: { fluxo: 'consulta_protocolo', protocolo_consulta: protoAi, limpar_sess: true } }];\n}\n\nif (tipo === 'pedido_consulta_sem_codigo' || intent.includes('consult') || intent.includes('status') || intent.includes('protocolo')) {\n  const msg =\n    respostaHumana ||\n    'Beleza! Me envia o *protocolo completo* no formato ZEL-AAAAMMDD-XXXX que eu consulto pra você.';\n  return [\n    {\n      json: {\n        fluxo: 'pergunta_contexto',\n        mensagem_whatsapp: msg,\n        redis_sess_payload: JSON.stringify({ mode: 'consulta_aguardando', ts: Date.now(), ultima_pergunta: msg }),\n      },\n    },\n  ];\n}\n\nif (tipo === 'nova_ocorrencia_problema_urbano' || intent.includes('nov') || intent.includes('buraco') || intent.includes('lixo')) {\n  return [{ json: { fluxo: 'nova_denuncia', limpar_sess: true } }];\n}\n\nif (j.tem_historico && texto.length > 0 && texto.length < 50 && tipo === 'ambiguo_precisa_contexto') {\n  const msg =\n    respostaHumana ||\n    'Olá! Vi que você já tem chamado(s) aqui. Prefere *abrir um novo relato* ou *consultar* um protocolo? Se for consultar, pode mandar o código ZEL-...';\n  return [\n    {\n      json: {\n        fluxo: 'pergunta_contexto',\n        mensagem_whatsapp: msg,\n        redis_sess_payload: JSON.stringify({ mode: 'menu_implicito', ts: Date.now() }),\n      },\n    },\n  ];\n}\n\nreturn [{ json: { fluxo: 'delegar_03l' } }];\n"
+      },
+      "id": "zel-04c-merge-intencao",
+      "name": "04c - Merge DeepSeek + Regras + Sessão 1min",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3560,
+        5100
+      ]
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "fl-consulta_protocolo",
+                    "leftValue": "={{ $json.fluxo }}",
+                    "rightValue": "consulta_protocolo",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "consulta_protocolo"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "fl-pergunta_contexto",
+                    "leftValue": "={{ $json.fluxo }}",
+                    "rightValue": "pergunta_contexto",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "pergunta_contexto"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "fl-nova_denuncia",
+                    "leftValue": "={{ $json.fluxo }}",
+                    "rightValue": "nova_denuncia",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "nova_denuncia"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "fl-resposta_natural",
+                    "leftValue": "={{ $json.fluxo }}",
+                    "rightValue": "resposta_natural",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "resposta_natural"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "fl-delegar_03l",
+                    "leftValue": "={{ $json.fluxo }}",
+                    "rightValue": "delegar_03l",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "delegar_03l"
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra"
+        }
+      },
+      "id": "zel-04d-switch-fluxo",
+      "name": "04d - Switch Fluxo (DeepSeek + sessão)",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        3780,
+        5100
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "delete",
+        "key": "=conv_sess:={{ $('01 - Webhook WhatsApp3').item.json.body.data.key.remoteJid }}"
+      },
+      "id": "zel-04j-redis-del-antes-consulta",
+      "name": "04j - Redis DEL conv_sess (antes consulta)",
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        3880,
+        4920
+      ],
+      "credentials": {
+        "redis": {
+          "id": "vqQF1gn3TFZPV65T",
+          "name": "Redis account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "as1",
+              "name": "protocolo_consulta",
+              "value": "={{ $json.protocolo_consulta }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "zel-04e-set-protocolo",
+      "name": "04e - SET protocolo_consulta",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        4000,
+        4920
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "set",
+        "key": "=conv_sess:={{ $('01 - Webhook WhatsApp3').item.json.body.data.key.remoteJid }}",
+        "value": "={{ $json.redis_sess_payload }}",
+        "expire": true,
+        "ttl": 60
+      },
+      "id": "zel-04f-redis-set-sess",
+      "name": "04f - SET Sessão 1min (conv_sess)",
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        4000,
+        5280
+      ],
+      "credentials": {
+        "redis": {
+          "id": "vqQF1gn3TFZPV65T",
+          "name": "Redis account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "messages-api",
+        "instanceName": "teste1",
+        "remoteJid": "={{ ($('01 - Webhook WhatsApp3').item.json.body.data.key.remoteJid || '').split('@')[0] }}",
+        "messageText": "={{ $('04c - Merge DeepSeek + Regras + Sessão 1min').item.json.mensagem_whatsapp }}",
+        "options_message": {
+          "delay": 1200
+        }
+      },
+      "type": "n8n-nodes-evolution-api.evolutionApi",
+      "typeVersion": 1,
+      "position": [
+        4220,
+        5280
+      ],
+      "id": "zel-04g-evo-contexto",
+      "name": "04g - WhatsApp: Pergunta contexto (sessão)",
+      "credentials": {
+        "evolutionApi": {
+          "id": "ycaKSUyEDBrrGGlw",
+          "name": "Evolution account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "delete",
+        "key": "=conv_sess:={{ $('01 - Webhook WhatsApp3').item.json.body.data.key.remoteJid }}"
+      },
+      "id": "zel-04h-redis-del-consulta",
+      "name": "04h - Redis DEL conv_sess (pós consulta)",
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        6180,
+        5550
+      ],
+      "credentials": {
+        "redis": {
+          "id": "vqQF1gn3TFZPV65T",
+          "name": "Redis account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "operation": "delete",
+        "key": "=conv_sess:={{ $('01 - Webhook WhatsApp3').item.json.body.data.key.remoteJid }}"
+      },
+      "id": "zel-04i-redis-del-antes-nova",
+      "name": "04i - Redis DEL conv_sess (antes nova denúncia)",
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        3880,
+        5360
+      ],
+      "credentials": {
+        "redis": {
+          "id": "vqQF1gn3TFZPV65T",
+          "name": "Redis account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "operation": "delete",
+        "key": "=conv_sess:={{ $('01 - Webhook WhatsApp3').item.json.body.data.key.remoteJid }}"
+      },
+      "id": "zel-04k-redis-del-pos-denuncia",
+      "name": "04k - Redis DEL conv_sess (pós denúncia enviada)",
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        6180,
+        5000
+      ],
+      "credentials": {
+        "redis": {
+          "id": "vqQF1gn3TFZPV65T",
+          "name": "Redis account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "operation": "delete",
+        "key": "=conv_sess:={{ $('01 - Webhook WhatsApp3').item.json.body.data.key.remoteJid }}"
+      },
+      "id": "zel-04m-redis-del-resp-natural",
+      "name": "04m - Redis DEL conv_sess (resposta natural)",
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        4000,
+        5620
+      ],
+      "credentials": {
+        "redis": {
+          "id": "vqQF1gn3TFZPV65T",
+          "name": "Redis account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "resource": "messages-api",
+        "instanceName": "teste1",
+        "remoteJid": "={{ ($('01 - Webhook WhatsApp3').item.json.body.data.key.remoteJid || '').split('@')[0] }}",
+        "messageText": "={{ $('04c - Merge DeepSeek + Regras + Sessão 1min').item.json.mensagem_whatsapp }}",
+        "options_message": {
+          "delay": 800
+        }
+      },
+      "type": "n8n-nodes-evolution-api.evolutionApi",
+      "typeVersion": 1,
+      "position": [
+        4220,
+        5620
+      ],
+      "id": "zel-04n-evo-resp-natural",
+      "name": "04n - WhatsApp: Resposta natural (DeepSeek)",
+      "credentials": {
+        "evolutionApi": {
+          "id": "ycaKSUyEDBrrGGlw",
+          "name": "Evolution account 2"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "00 - Filtro: Ignorar fromMe": {
+      "main": [
+        [
+          {
+            "node": "02b - Gerar Protocolo3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "03f - Salvar Foto API": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "03i - Consultar Histórico API": {
+      "main": [
+        [
+          {
+            "node": "03j - Enriquecer com Histórico",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "03j - Enriquecer com Histórico": {
+      "main": [
+        [
+          {
+            "node": "03k - GET Estado Conversa",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "03k - GET Estado Conversa": {
+      "main": [
+        [
+          {
+            "node": "04a - GET Sessão Fluxo 1min",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "03l - Router por Estado": {
+      "main": [
+        [
+          {
+            "node": "03m - Identificar Escolha do Menu",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "03r_get - GET Lista Protocolos",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "03p - Preparar Input IA",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "03m - Identificar Escolha do Menu": {
+      "main": [
+        [
+          {
+            "node": "03n_consultar - Qtd Protocolos?",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "03n_nova - SET idle (nova denuncia)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "03n_consultar - Qtd Protocolos?": {
+      "main": [
+        [
+          {
+            "node": "03pc1 - Preparar Consulta Única",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "03o - Montar Lista Protocolos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "03pc1 - Preparar Consulta Única": {
+      "main": [
+        [
+          {
+            "node": "03v - Validar Formato Protocolo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "03o - Montar Lista Protocolos": {
+      "main": [
+        [
+          {
+            "node": "03o2 - SET Lista Redis",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "03o2 - SET Lista Redis": {
+      "main": [
+        [
+          {
+            "node": "03o3 - SET Estado aguardando_selecao",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "03o3 - SET Estado aguardando_selecao": {
+      "main": [
+        [
+          {
+            "node": "03q2 - WhatsApp: Lista Protocolos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "03r_get - GET Lista Protocolos": {
+      "main": [
+        [
+          {
+            "node": "03r - Resolver Protocolo Selecionado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "03r - Resolver Protocolo Selecionado": {
+      "main": [
+        [
+          {
+            "node": "03v - Validar Formato Protocolo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "03n_nova - SET idle (nova denuncia)": {
+      "main": [
+        [
+          {
+            "node": "03p - Preparar Input IA",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "03p - Preparar Input IA": {
+      "main": [
+        [
+          {
+            "node": "04 - IA Curadora (Vision + Extração)3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "03t - É Retornante?": {
+      "main": [
+        [
+          {
+            "node": "03t_state - SET aguardando_menu",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "03t_state - SET aguardando_menu": {
+      "main": [
+        [
+          {
+            "node": "03t_protos - SET Lista Protocolos Redis",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "03v - Validar Formato Protocolo": {
+      "main": [
+        [
+          {
+            "node": "12 - Consultar Ocorrência API3",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "03w - WhatsApp: Protocolo Inválido",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "13 - Formatar Dados Consulta": {
+      "main": [
+        [
+          {
+            "node": "Create chat completion3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "01 - Webhook WhatsApp3": {
+      "main": [
+        [
+          {
+            "node": "02 - Extract & Normalize Payload3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "02 - Extract & Normalize Payload3": {
+      "main": [
+        [
+          {
+            "node": "00 - Filtro: Ignorar fromMe",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "02b - Gerar Protocolo3": {
+      "main": [
+        [
+          {
+            "node": "Switch3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch3": {
+      "main": [
+        [
+          {
+            "node": "Obter m dia em base2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Edit Fields5",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Obter m dia em base67",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Edit Fields5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Obter m dia em base2": {
+      "main": [
+        [
+          {
+            "node": "03c - Salvar Áudio API3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "03c - Salvar Áudio API3": {
+      "main": [
+        [
+          {
+            "node": "03d - Transcrever Áudio (SRT)3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "03d - Transcrever Áudio (SRT)3": {
+      "main": [
+        [
+          {
+            "node": "03e - Extrair Texto do SRT3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "03e - Extrair Texto do SRT3": {
+      "main": [
+        [
+          {
+            "node": "03g - Normalizar Dados Áudio3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "03g - Normalizar Dados Áudio3": {
+      "main": [
+        [
+          {
+            "node": "03i - Consultar Histórico API",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields5": {
+      "main": [
+        [
+          {
+            "node": "03h - Normalizar Dados Mídia/Texto3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Obter m dia em base67": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript13",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript13": {
+      "main": [
+        [
+          {
+            "node": "03f - Salvar Foto API",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields6": {
+      "main": [
+        [
+          {
+            "node": "03h - Normalizar Dados Mídia/Texto3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "03h - Normalizar Dados Mídia/Texto3": {
+      "main": [
+        [
+          {
+            "node": "03i - Consultar Histórico API",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model3": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "04 - IA Curadora (Vision + Extração)3",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Redis Chat Memory3": {
+      "ai_memory": [
+        [
+          {
+            "node": "04 - IA Curadora (Vision + Extração)3",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "04 - IA Curadora (Vision + Extração)3": {
+      "main": [
+        [
+          {
+            "node": "05 - Parse JSON da IA3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "05 - Parse JSON da IA3": {
+      "main": [
+        [
+          {
+            "node": "06 - Guardrail: Válido?3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "06 - Guardrail: Válido?3": {
+      "main": [
+        [
+          {
+            "node": "If3",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "06b - Tem Todas as Infos?3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "06b - Tem Todas as Infos?3": {
+      "main": [
+        [
+          {
+            "node": "09b - Build Mensagem Pede Info3",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "07 - Build API Payload3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "09b - Build Mensagem Pede Info3": {
+      "main": [
+        [
+          {
+            "node": "Evolution API11",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "07 - Build API Payload3": {
+      "main": [
+        [
+          {
+            "node": "08 - POST /ocorrencias (Backend)3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "08 - POST /ocorrencias (Backend)3": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields7",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields7": {
+      "main": [
+        [
+          {
+            "node": "Evolution API12",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Evolution API12": {
+      "main": [
+        [
+          {
+            "node": "04k - Redis DEL conv_sess (pós denúncia enviada)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If3": {
+      "main": [
+        [
+          {
+            "node": "Evolution API13",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "03v - Validar Formato Protocolo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Evolution API13": {
+      "main": [
+        [
+          {
+            "node": "03t - É Retornante?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "12 - Consultar Ocorrência API3": {
+      "main": [
+        [
+          {
+            "node": "13 - Formatar Dados Consulta",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create chat completion3": {
+      "main": [
+        [
+          {
+            "node": "Evolution API14",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Evolution API14": {
+      "main": [
+        [
+          {
+            "node": "04h - Redis DEL conv_sess (pós consulta)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "04a - GET Sessão Fluxo 1min": {
+      "main": [
+        [
+          {
+            "node": "04b - DeepSeek Roteador Inteligente (inicial)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "04c - Merge DeepSeek + Regras + Sessão 1min": {
+      "main": [
+        [
+          {
+            "node": "04d - Switch Fluxo (DeepSeek + sessão)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "04d - Switch Fluxo (DeepSeek + sessão)": {
+      "main": [
+        [
+          {
+            "node": "04j - Redis DEL conv_sess (antes consulta)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "04f - SET Sessão 1min (conv_sess)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "04i - Redis DEL conv_sess (antes nova denúncia)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "04m - Redis DEL conv_sess (resposta natural)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "03l - Router por Estado",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "03l - Router por Estado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "04j - Redis DEL conv_sess (antes consulta)": {
+      "main": [
+        [
+          {
+            "node": "04e - SET protocolo_consulta",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "04e - SET protocolo_consulta": {
+      "main": [
+        [
+          {
+            "node": "03v - Validar Formato Protocolo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "04f - SET Sessão 1min (conv_sess)": {
+      "main": [
+        [
+          {
+            "node": "04g - WhatsApp: Pergunta contexto (sessão)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "04i - Redis DEL conv_sess (antes nova denúncia)": {
+      "main": [
+        [
+          {
+            "node": "03n_nova - SET idle (nova denuncia)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "04h - Redis DEL conv_sess (pós consulta)": {
+      "main": [
+        [
+          {
+            "node": "03s2 - SET idle pós Consulta",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "04k - Redis DEL conv_sess (pós denúncia enviada)": {
+      "main": [
+        [
+          {
+            "node": "03s1 - SET idle pós Denúncia",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "04b - DeepSeek Roteador Inteligente (inicial)": {
+      "main": [
+        [
+          {
+            "node": "04c - Merge DeepSeek + Regras + Sessão 1min",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "04m - Redis DEL conv_sess (resposta natural)": {
+      "main": [
+        [
+          {
+            "node": "04n - WhatsApp: Resposta natural (DeepSeek)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "meta": {
+    "instanceId": "25d835488615d5549459a8df632db7e5bcd28731f11ebcd6434bd4e3252a3696"
+  }
+}

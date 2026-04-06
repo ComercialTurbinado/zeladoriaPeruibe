@@ -5,8 +5,8 @@ import toast from 'react-hot-toast'
 import { Eye, EyeOff, Shield, Lock, Mail, ArrowRight } from 'lucide-react'
 
 export default function Login() {
-  const [email, setEmail] = useState('admin@zeladoria.gov.br')
-  const [senha, setSenha] = useState('admin123')
+  const [email, setEmail] = useState('')
+  const [senha, setSenha] = useState('')
   const [showSenha, setShowSenha] = useState(false)
   const [loading, setLoading] = useState(false)
   const { login } = useAuth()
